@@ -169,10 +169,10 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area
 <div class="card"><div class="lbl">Gegessen</div><div class="big"><span id="kEat">0</span> <small id="kOf"></small></div><div class="bar" id="kBar"><span style="width:0"></span></div>
 <div class="g2"><div><div class="lbl">Ziel</div><div class="v" id="kGoal"></div></div><div><div class="lbl" id="kLeftL">Noch frei</div><div class="v" id="kLeft"></div></div></div></div>
 <div class="sheet" id="sh-kal"><div class="sh-h"><b>Eintrag hinzufügen</b><button class="x" data-close aria-label="Schließen">✕</button></div>
-<div class="seg" id="kMode"><button class="on" data-m="est">Suchen</button><button data-m="man">Pro 100 g/ml</button><button data-m="dir">Direkt</button></div>
-<div id="k-est"><div class="f"><label for="kText">Lebensmittel suchen</label><input id="kText" maxlength="80" placeholder="z. B. Haferflocken" enterkeyhint="search"></div>
+<div class="seg" id="kMode"><button class="on" data-m="est">Schreiben</button><button data-m="man">Pro 100 g/ml</button><button data-m="dir">Direkt</button></div>
+<div id="k-est"><div class="f"><label for="kText">Was hast du gegessen oder getrunken?</label><input id="kText" maxlength="300" placeholder="z. B. Ich habe einen Döner mit Zwiebeln gegessen" enterkeyhint="send"></div>
 <button class="btn s" id="kMic" style="margin:-4px 0 12px">🎤 Sprechen</button>
-<button class="btn" id="kEstBtn">Suchen</button><div class="hint">Die Werte sind eine KI-Schätzung pro 100 g/ml und nur ungefähr. Tippe ein Ergebnis an und gib dann die Menge ein.</div>
+<button class="btn" id="kEstBtn">Schätzen</button><div class="hint">Die Werte sind eine KI-Schätzung pro 100 g/ml und nur ungefähr. Tippe ein Ergebnis an und gib dann die Menge ein.</div>
 <div id="kRes" style="margin-top:12px"></div></div>
 <div id="k-man" class="hid"><div class="f"><label for="mN">Name</label><input id="mN" maxlength="60"></div>
 <div class="r2"><div class="f"><label for="mP">kcal pro 100 g/ml</label><input id="mP" type="number" inputmode="decimal" min="0" step="0.1"></div><div class="f"><label for="mA">Menge</label><input id="mA" type="number" inputmode="decimal" min="0"></div></div>
@@ -200,7 +200,7 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area
 <div class="f" style="margin-top:10px"><textarea id="bkText" placeholder="Backup-Text hier erzeugen oder einfügen" style="min-height:90px"></textarea></div>
 <div class="r2"><button class="btn s" id="bkMake">Text erzeugen</button><button class="btn s" id="bkRestore">Aus Text laden</button></div></details></div>
 <div class="card"><div class="lbl">Version</div>
-<div class="hint" style="margin-top:0" id="verApp">App: v2026-11-14-3</div>
+<div class="hint" style="margin-top:0" id="verApp">App: v2026-11-14-4</div>
 <div class="hint" id="verWorker">KI-Worker: wird geprüft …</div></div>
 </section>
 
@@ -392,7 +392,7 @@ const fillDirect=(name,kcal)=>{$("dN").value=String(name).slice(0,60);$("dK").va
 const fillManual=(name,per,unit,hint)=>{$("mN").value=String(name).slice(0,60);$("mP").value=Math.round(per*10)/10;$("mU").value=unit==="ml"?"ml":"g";$("mA").value="";calc();$("kHint").textContent=hint||"";setMode("man");$("mA").focus()};
 const showAi=d=>{aiData=d;$("kRes").innerHTML=`<div class="res"><b>${esc(d.name)}</b><div style="color:var(--muted);font-size:13px;margin-top:4px">${esc(d.hint)}</div></div>
 <div class="ln" data-act="ganz" style="cursor:pointer"><div class="t">Ganze Portion</div><b>${nf(d.ganz)} kcal</b></div>
-<div class="ln" data-act="halb" style="cursor:pointer"><div class="t">Halbe Portion</div><b>${nf(d.ganz/2)} kcal</b></div>
+<div class="ln" data-act="halb" style="cursor:pointer"><div class="t">Halbe Portion</div><b>${nf(d.halb)} kcal</b></div>
 <div class="ln" data-act="per" style="cursor:pointer"><div class="t">Pro 100 ${esc(d.unit)} · ${nf(d.per)} kcal</div><b>Menge wählen →</b></div>`};
 const offSearch=async q=>{const r=await fetch("https://world.openfoodfacts.org/cgi/search.pl?search_simple=1&action=process&json=1&page_size=20&fields=product_name,brands,nutriments&search_terms="+encodeURIComponent(q));
 const j=await r.json();found=(j.products||[]).filter(p=>p.product_name&&p.nutriments&&p.nutriments["energy-kcal_100g"]!=null).slice(0,10);
@@ -407,7 +407,8 @@ let j=null;try{j=JSON.parse(txt)}catch(e){}
 if(!r.ok||!j||j.error){const parts=["HTTP "+r.status];if(j&&j.error)parts.push(j.error);if(j&&j.detail)parts.push(j.detail);if(!j)parts.push("Antwort: "+txt.slice(0,200));$("kRes").innerHTML=errBox(parts.join(" · "));return}
 const per=Number(j.per_100),ganz=Number(j.ganz_kcal);
 if(!isFinite(per)||!isFinite(ganz)||per<0||ganz<0){$("kRes").innerHTML=errBox("Unerwartete Antwort: "+txt.slice(0,200));return}
-showAi({name:String(j.name||q).slice(0,60),unit:j.unit==="ml"?"ml":"g",per,ganz:Math.round(ganz),hint:String(j.hinweis||"").slice(0,160)});
+const halb=Number.isFinite(Number(j.halb_kcal))?Number(j.halb_kcal):ganz/2;
+showAi({name:String(j.name||q).slice(0,60),unit:j.unit==="ml"?"ml":"g",per,ganz:Math.round(ganz),halb:Math.round(halb),hint:String(j.hinweis||"").slice(0,160)});
 }finally{b.disabled=false;b.textContent="Suchen"}};
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 if(SR){const rec=new SR();rec.lang="de-DE";rec.interimResults=false;rec.maxAlternatives=1;
@@ -421,7 +422,7 @@ $("kText").addEventListener("keydown",e=>{if(e.key==="Enter")$("kEstBtn").click(
 $("kRes").onclick=e=>{const r=e.target.closest("[data-act],[data-p]");if(!r)return;
 if(r.dataset.act){const d=aiData;if(!d)return;
 if(r.dataset.act==="ganz")return fillDirect(d.name,d.ganz);
-if(r.dataset.act==="halb")return fillDirect(d.name+" (halb)",d.ganz/2);
+if(r.dataset.act==="halb")return fillDirect(d.name+" (halb)",d.halb);
 return fillManual(d.name,d.per,d.unit,"KI-Schätzung – bitte prüfen: "+d.hint)}
 const p=found[+r.dataset.p];fillManual(p.product_name,p.nutriments["energy-kcal_100g"],"g","Quelle: Open Food Facts")};
 ["mP","mA"].forEach(id=>$(id).addEventListener("input",calc));
