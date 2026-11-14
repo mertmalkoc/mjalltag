@@ -380,25 +380,31 @@ $("kPrev").onclick=()=>{kd.setDate(kd.getDate()-1);renderKal()};$("kNext").oncli
 $("kMode").onclick=e=>{const m=e.target.dataset.m;if(!m)return;[...$("kMode").children].forEach(b=>b.classList.toggle("on",b===e.target));["est","man","dir"].forEach(k=>$("k-"+k).classList.toggle("hid",k!==m))};
 $("kList").onclick=e=>{const id=e.target.dataset.del;if(!id)return;const key=ymd(kd);days[key]=kEntries().filter(x=>x.id!==id);run(()=>saveDay(key))};
 const calc=()=>{const v=(parseFloat($("mP").value)||0)*(parseFloat($("mA").value)||0)/100;$("mC").textContent="= "+nf(v)+" kcal"};
-let found=[];
+let found=[],aiData=null;
 const WORKER="https://mj-kalorien.mertm-malkoc.workers.dev";
-const fillFrom=(name,per,unit,hint)=>{$("mN").value=name.slice(0,60);$("mP").value=Math.round(per*10)/10;$("mU").value=unit==="ml"?"ml":"g";$("mA").value="";calc();
-$("kHint").textContent=hint||"";[...$("kMode").children].forEach(b=>b.classList.toggle("on",b.dataset.m==="man"));["est","man","dir"].forEach(k=>$("k-"+k).classList.toggle("hid",k!=="man"));$("mA").focus()};
+const setMode=m=>{[...$("kMode").children].forEach(b=>b.classList.toggle("on",b.dataset.m===m));["est","man","dir"].forEach(k=>$("k-"+k).classList.toggle("hid",k!==m))};
+const fillDirect=(name,kcal)=>{$("dN").value=String(name).slice(0,60);$("dK").value=Math.round(kcal);setMode("dir")};
+const fillManual=(name,per,unit,hint)=>{$("mN").value=String(name).slice(0,60);$("mP").value=Math.round(per*10)/10;$("mU").value=unit==="ml"?"ml":"g";$("mA").value="";calc();$("kHint").textContent=hint||"";setMode("man");$("mA").focus()};
+const showAi=d=>{aiData=d;$("kRes").innerHTML=`<div class="res"><b>${esc(d.name)}</b><div style="color:var(--muted);font-size:13px;margin-top:4px">${esc(d.hint)}</div></div>
+<div class="ln" data-act="ganz" style="cursor:pointer"><div class="t">Ganze Portion</div><b>${nf(d.ganz)} kcal</b></div>
+<div class="ln" data-act="halb" style="cursor:pointer"><div class="t">Halbe Portion</div><b>${nf(d.ganz/2)} kcal</b></div>
+<div class="ln" data-act="per" style="cursor:pointer"><div class="t">Pro 100 ${esc(d.unit)} · ${nf(d.per)} kcal</div><b>Menge wählen →</b></div>`};
 const offSearch=async q=>{const r=await fetch("https://world.openfoodfacts.org/cgi/search.pl?search_simple=1&action=process&json=1&page_size=20&fields=product_name,brands,nutriments&search_terms="+encodeURIComponent(q));
 const j=await r.json();found=(j.products||[]).filter(p=>p.product_name&&p.nutriments&&p.nutriments["energy-kcal_100g"]!=null).slice(0,10);
 $("kRes").innerHTML=found.length?found.map((p,i)=>`<div class="ln" data-p="${i}" style="cursor:pointer"><div class="t">${esc(p.product_name)}<small>${esc(p.brands||"")}</small></div><b>${nf(p.nutriments["energy-kcal_100g"])} kcal/100g</b></div>`).join(""):EMPTY("Nichts gefunden – versuche ein einfacheres Wort")};
 $("kEstBtn").onclick=async()=>{const q=$("kText").value.trim();if(!q)return;const b=$("kEstBtn");b.disabled=true;b.textContent="Suche …";$("kRes").innerHTML="";
 try{const r=await fetch(WORKER,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:q})});if(!r.ok)throw new Error("worker");
-const j=JSON.parse(await r.text());const per=Number(j.kcal_per_100);if(!isFinite(per)||per<0)throw new Error("parse");
-const unit=j.unit==="ml"?"ml":"g";const name=String(j.name||q).slice(0,60),hint=String(j.hinweis||"").slice(0,160);
-$("kRes").innerHTML=`<div class="ln" data-ai="1" style="cursor:pointer"><div class="t">${esc(name)}<small>KI-Schätzung · ${esc(hint)}</small></div><b>${nf(per)} kcal/100 ${unit}</b></div>`;
-$("kRes").dataset.ai=JSON.stringify({name,per,unit,hint});
+const j=JSON.parse(await r.text());const per=Number(j.per_100),ganz=Number(j.ganz_kcal);if(!isFinite(per)||!isFinite(ganz)||per<0||ganz<0)throw new Error("parse");
+showAi({name:String(j.name||q).slice(0,60),unit:j.unit==="ml"?"ml":"g",per,ganz:Math.round(ganz),hint:String(j.hinweis||"").slice(0,160)});
 }catch(e){try{await offSearch(q);toast("KI nicht erreichbar – Open Food Facts")}catch(er){toast("Suche fehlgeschlagen")}}
 finally{b.disabled=false;b.textContent="Suchen"}};
 $("kText").addEventListener("keydown",e=>{if(e.key==="Enter")$("kEstBtn").click()});
-$("kRes").onclick=e=>{const r=e.target.closest("[data-ai],[data-p]");if(!r)return;
-if(r.dataset.ai){const d=JSON.parse($("kRes").dataset.ai);return fillFrom(d.name,d.per,d.unit,"KI-Schätzung – bitte Werte prüfen: "+d.hint)}
-const p=found[+r.dataset.p];fillFrom(p.product_name,p.nutriments["energy-kcal_100g"],"g","Quelle: Open Food Facts")};
+$("kRes").onclick=e=>{const r=e.target.closest("[data-act],[data-p]");if(!r)return;
+if(r.dataset.act){const d=aiData;if(!d)return;
+if(r.dataset.act==="ganz")return fillDirect(d.name,d.ganz);
+if(r.dataset.act==="halb")return fillDirect(d.name+" (halb)",d.ganz/2);
+return fillManual(d.name,d.per,d.unit,"KI-Schätzung – bitte prüfen: "+d.hint)}
+const p=found[+r.dataset.p];fillManual(p.product_name,p.nutriments["energy-kcal_100g"],"g","Quelle: Open Food Facts")};
 ["mP","mA"].forEach(id=>$(id).addEventListener("input",calc));
 $("mSave").onclick=()=>{const p=parseFloat($("mP").value),a=parseFloat($("mA").value),n=$("mN").value.trim();if(!n||!(p>=0)||!(a>0))return toast("Name, kcal und Menge ausfüllen");
 addK(n,p*a/100,`${nf(a)} ${$("mU").value} · ${p.toLocaleString("de-DE")} kcal/100 ${$("mU").value}`);["mN","mP","mA"].forEach(id=>$(id).value="");calc()};
