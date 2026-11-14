@@ -392,12 +392,18 @@ const showAi=d=>{aiData=d;$("kRes").innerHTML=`<div class="res"><b>${esc(d.name)
 const offSearch=async q=>{const r=await fetch("https://world.openfoodfacts.org/cgi/search.pl?search_simple=1&action=process&json=1&page_size=20&fields=product_name,brands,nutriments&search_terms="+encodeURIComponent(q));
 const j=await r.json();found=(j.products||[]).filter(p=>p.product_name&&p.nutriments&&p.nutriments["energy-kcal_100g"]!=null).slice(0,10);
 $("kRes").innerHTML=found.length?found.map((p,i)=>`<div class="ln" data-p="${i}" style="cursor:pointer"><div class="t">${esc(p.product_name)}<small>${esc(p.brands||"")}</small></div><b>${nf(p.nutriments["energy-kcal_100g"])} kcal/100g</b></div>`).join(""):EMPTY("Nichts gefunden – versuche ein einfacheres Wort")};
+const errBox=t=>`<div class="res" style="color:var(--out)"><b>Fehler</b><div style="font-size:14px;margin-top:4px;word-break:break-word">${esc(t)}</div></div>`;
 $("kEstBtn").onclick=async()=>{const q=$("kText").value.trim();if(!q)return;const b=$("kEstBtn");b.disabled=true;b.textContent="Suche …";$("kRes").innerHTML="";
-try{const r=await fetch(WORKER,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:q})});if(!r.ok)throw new Error("worker");
-const j=JSON.parse(await r.text());const per=Number(j.per_100),ganz=Number(j.ganz_kcal);if(!isFinite(per)||!isFinite(ganz)||per<0||ganz<0)throw new Error("parse");
+try{
+let r,txt;
+try{r=await fetch(WORKER,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:q})});txt=await r.text()}
+catch(e){$("kRes").innerHTML=errBox("Keine Verbindung zum Worker: "+(e&&e.message||e));try{await offSearch(q)}catch(er){}return}
+let j=null;try{j=JSON.parse(txt)}catch(e){}
+if(!r.ok||!j||j.error){const parts=["HTTP "+r.status];if(j&&j.error)parts.push(j.error);if(j&&j.detail)parts.push(j.detail);if(!j)parts.push("Antwort: "+txt.slice(0,200));$("kRes").innerHTML=errBox(parts.join(" · "));return}
+const per=Number(j.per_100),ganz=Number(j.ganz_kcal);
+if(!isFinite(per)||!isFinite(ganz)||per<0||ganz<0){$("kRes").innerHTML=errBox("Unerwartete Antwort: "+txt.slice(0,200));return}
 showAi({name:String(j.name||q).slice(0,60),unit:j.unit==="ml"?"ml":"g",per,ganz:Math.round(ganz),hint:String(j.hinweis||"").slice(0,160)});
-}catch(e){try{await offSearch(q);toast("KI nicht erreichbar – Open Food Facts")}catch(er){toast("Suche fehlgeschlagen")}}
-finally{b.disabled=false;b.textContent="Suchen"}};
+}finally{b.disabled=false;b.textContent="Suchen"}};
 $("kText").addEventListener("keydown",e=>{if(e.key==="Enter")$("kEstBtn").click()});
 $("kRes").onclick=e=>{const r=e.target.closest("[data-act],[data-p]");if(!r)return;
 if(r.dataset.act){const d=aiData;if(!d)return;
