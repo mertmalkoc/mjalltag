@@ -56,6 +56,7 @@ textarea{resize:vertical;min-height:64px}
 .hint{font-size:13px;color:var(--muted);line-height:1.4;margin-top:8px}
 .res{background:var(--bg);border-radius:12px;padding:12px;margin-bottom:12px;font-size:15px;line-height:1.4}
 .hid{display:none}
+#kMic.rec{background:var(--out);color:#fff}
 details summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:15px}
 details[open] summary{margin-bottom:10px}
 .chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--muted);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff}
@@ -170,6 +171,7 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area
 <div class="sheet" id="sh-kal"><div class="sh-h"><b>Eintrag hinzufügen</b><button class="x" data-close aria-label="Schließen">✕</button></div>
 <div class="seg" id="kMode"><button class="on" data-m="est">Suchen</button><button data-m="man">Pro 100 g/ml</button><button data-m="dir">Direkt</button></div>
 <div id="k-est"><div class="f"><label for="kText">Lebensmittel suchen</label><input id="kText" maxlength="80" placeholder="z. B. Haferflocken" enterkeyhint="search"></div>
+<button class="btn s" id="kMic" style="margin:-4px 0 12px">🎤 Sprechen</button>
 <button class="btn" id="kEstBtn">Suchen</button><div class="hint">Die Werte sind eine KI-Schätzung pro 100 g/ml und nur ungefähr. Tippe ein Ergebnis an und gib dann die Menge ein.</div>
 <div id="kRes" style="margin-top:12px"></div></div>
 <div id="k-man" class="hid"><div class="f"><label for="mN">Name</label><input id="mN" maxlength="60"></div>
@@ -404,6 +406,14 @@ const per=Number(j.per_100),ganz=Number(j.ganz_kcal);
 if(!isFinite(per)||!isFinite(ganz)||per<0||ganz<0){$("kRes").innerHTML=errBox("Unerwartete Antwort: "+txt.slice(0,200));return}
 showAi({name:String(j.name||q).slice(0,60),unit:j.unit==="ml"?"ml":"g",per,ganz:Math.round(ganz),hint:String(j.hinweis||"").slice(0,160)});
 }finally{b.disabled=false;b.textContent="Suchen"}};
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(SR){const rec=new SR();rec.lang="de-DE";rec.interimResults=false;rec.maxAlternatives=1;
+rec.onresult=e=>{$("kText").value=e.results[0][0].transcript;toast("Erkannt – tippe auf Suchen")};
+rec.onerror=e=>toast(e.error==="not-allowed"?"Mikrofon nicht erlaubt (Einstellungen → Safari)":e.error==="no-speech"?"Nichts gehört – nochmal versuchen":"Spracherkennung fehlgeschlagen");
+rec.onend=()=>{$("kMic").classList.remove("rec");$("kMic").textContent="🎤 Sprechen"};
+$("kMic").onclick=()=>{if($("kMic").classList.contains("rec")){rec.stop();return}
+$("kMic").classList.add("rec");$("kMic").textContent="● Höre zu … (nochmal tippen zum Stoppen)";try{rec.start()}catch(e){rec.stop()}};
+}else{$("kMic").disabled=true;$("kMic").textContent="Sprache wird hier nicht unterstützt";}
 $("kText").addEventListener("keydown",e=>{if(e.key==="Enter")$("kEstBtn").click()});
 $("kRes").onclick=e=>{const r=e.target.closest("[data-act],[data-p]");if(!r)return;
 if(r.dataset.act){const d=aiData;if(!d)return;
