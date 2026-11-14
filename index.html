@@ -199,6 +199,9 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area
 <details style="margin-top:10px"><summary>Als Text kopieren oder einfügen</summary>
 <div class="f" style="margin-top:10px"><textarea id="bkText" placeholder="Backup-Text hier erzeugen oder einfügen" style="min-height:90px"></textarea></div>
 <div class="r2"><button class="btn s" id="bkMake">Text erzeugen</button><button class="btn s" id="bkRestore">Aus Text laden</button></div></details></div>
+<div class="card"><div class="lbl">Version</div>
+<div class="hint" style="margin-top:0" id="verApp">App: v2026-11-14-3</div>
+<div class="hint" id="verWorker">KI-Worker: wird geprüft …</div></div>
 </section>
 
 </main>
@@ -456,6 +459,7 @@ $("bkFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new File
 $("bkMake").onclick=()=>{$("bkText").value=bkText();toast("Text erzeugt")};
 $("bkRestore").onclick=()=>bkImport($("bkText").value);
 
+fetch(WORKER+"?version=1").then(r=>r.json()).then(j=>{$("verWorker").textContent="KI-Worker: "+j.version+" · Modell "+j.modell}).catch(()=>{$("verWorker").textContent="KI-Worker: nicht erreichbar"});
 renderFin();renderShop();renderCal();renderKal();renderSet();
 })();
 </script>
