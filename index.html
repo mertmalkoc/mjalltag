@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Alltag">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#f5f5f7">
+<title>Alltag</title>
+<script>try{var t=localStorage.getItem("sa.theme");if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+:root{--bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--muted:#6e6e73;--line:#e5e5ea;--accent:#0a84ff;--ok:#248a3d;--out:#d70015;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme]){--bg:#000;--card:#1c1c1e;--text:#f5f5f7;--muted:#98989d;--line:#38383a;--ok:#30d158;--out:#ff453a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d0d0e;--card:#1a1a1a;--text:#f5f5f7;--muted:#9b9ba1;--line:#2d2d30;--accent:#d88bdb;--ok:#30d158;--out:#ff453a;color-scheme:dark}
+:root[data-theme="pink"]{--bg:#f3d1f2;--card:#fbe9fa;--text:#2a1130;--muted:#7e4a88;--line:#e5b4e6;--accent:#b043bd;--ok:#1b8a4e;--out:#b8103c;color-scheme:light}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:12px 14px 96px;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
+main{max-width:560px;margin:0 auto}
+.view{display:none}.view.on{display:block}
+header{display:flex;justify-content:space-between;align-items:center;margin:6px 4px 12px}
+h1{font-size:28px;font-weight:700}
+h2{font-size:13px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin:4px 4px 8px}
+.card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:14px}
+.lbl,label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.lbl{text-transform:uppercase;letter-spacing:.04em}
+.big{font-size:36px;font-weight:700}.big small{font-size:15px;font-weight:500;color:var(--muted)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.v{font-size:20px;font-weight:600;margin-top:2px}
+.in{color:var(--ok)}.out{color:var(--out)}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:8px}
+.bar span{display:block;height:100%;background:var(--accent);border-radius:4px;transition:width .3s}
+.bar.over span{background:var(--out)}
+.ln{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.ln:first-child{border-top:none}.ln.col{display:block}.sp{display:flex;justify-content:space-between}
+.ln small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.t{flex:1;min-width:0;word-break:break-word}
+.x{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:2px 6px}
+.empty{color:var(--muted);text-align:center;padding:16px 0;font-size:15px}
+.f{margin-bottom:12px}
+input,select,textarea{width:100%;font:inherit;font-size:17px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);-webkit-appearance:none}
+textarea{resize:vertical;min-height:64px}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{width:100%;padding:14px;border:none;border-radius:14px;background:var(--accent);color:#fff;font:inherit;font-size:17px;font-weight:600;cursor:pointer}
+.btn:disabled{opacity:.5}.btn.s{background:var(--bg);color:var(--accent)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--bg);border-radius:12px;padding:4px;gap:4px;margin-bottom:12px}
+.seg button{border:none;background:none;padding:9px 4px;border-radius:9px;font:inherit;font-size:15px;font-weight:600;color:var(--muted);cursor:pointer}
+.seg button.on{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.mon{display:flex;align-items:center;color:var(--accent);font-weight:600;font-size:15px;white-space:nowrap}
+.mon button{background:none;border:none;color:var(--accent);font-size:22px;padding:2px 8px;cursor:pointer}
+.add{display:flex;gap:8px}.add button{width:auto;padding:0 16px;border:none;border-radius:12px;background:var(--accent);color:#fff;font:inherit;font-weight:600;cursor:pointer}
+.hint{font-size:13px;color:var(--muted);line-height:1.4;margin-top:8px}
+.res{background:var(--bg);border-radius:12px;padding:12px;margin-bottom:12px;font-size:15px;line-height:1.4}
+.hid{display:none}
+details summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:15px}
+details[open] summary{margin-bottom:10px}
+.chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--muted);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff}
+.done .chk{background:var(--ok);border-color:var(--ok)}.done .nm{text-decoration:line-through;color:var(--muted)}
+.wd,.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.wd{font-size:12px;color:var(--muted);font-weight:600;padding-bottom:6px}
+.cd{min-height:54px;border-radius:10px;padding:4px 2px;background:none;border:none;color:var(--text);font:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.cd.o{color:var(--muted);opacity:.45}.cd.sel{background:var(--bg)}
+.cd i{font-style:normal;font-size:15px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.cd.td i{background:var(--accent);color:#fff;font-weight:600}
+.dots{display:flex;gap:3px;justify-content:center}.dot{width:7px;height:7px;border-radius:50%}
+.ev{display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.ev:first-child{border-top:none}
+.ev .b{width:4px;border-radius:2px;flex-shrink:0}
+.note{font-size:14px;opacity:.8;margin-top:6px;white-space:pre-wrap;word-break:break-word}
+.sw{display:grid;grid-template-columns:repeat(8,1fr);gap:8px}
+.sw input{display:none}.sw label{aspect-ratio:1;border-radius:50%;cursor:pointer;border:2px solid transparent;margin:0}
+.sw input:checked+label{border-color:var(--text);box-shadow:inset 0 0 0 3px var(--card)}
+.th{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.th button{border:2px solid var(--line);background:var(--bg);border-radius:14px;padding:12px 4px;font:inherit;font-size:15px;font-weight:600;color:var(--text);cursor:pointer}
+.th button i{display:block;width:30px;height:30px;border-radius:50%;margin:0 auto 6px;border:1px solid var(--line)}
+.th button.on{border-color:var(--accent)}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));z-index:5}
+nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);text-decoration:none;font-size:11px;font-weight:600;padding:4px 0;-webkit-tap-highlight-color:transparent}
+nav a.on{color:var(--accent)}
+nav svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:20px;font-size:15px;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;z-index:9}
+.toast.show{opacity:.92}
+html,body{overscroll-behavior:none}
+body{padding-bottom:150px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;touch-action:pan-y;overflow-x:hidden}
+input,textarea,select{-webkit-user-select:text;user-select:text}
+.btn,.cd,.th button,.add button,.fab{transition:transform .12s,opacity .12s}
+.btn:active,.cd:active,.th button:active,.add button:active{transform:scale(.96)}
+nav a:active{opacity:.55}
+.x{padding:8px 10px;margin:-6px -4px}
+.view.on{animation:vfade .25s ease}
+@keyframes vfade{from{opacity:0}to{opacity:1}}
+nav{background:color-mix(in srgb,var(--card) 80%,transparent);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px)}
+.fab{position:fixed;right:18px;bottom:calc(78px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:32px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.28);z-index:6;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.fab:active{transform:scale(.9)}.fab.hid{display:none}
+#bd{position:fixed;inset:0;background:rgba(0,0,0,.42);opacity:0;pointer-events:none;transition:opacity .25s;z-index:15}
+#bd.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;max-height:88vh;overflow-y:auto;background:var(--card);border-radius:22px 22px 0 0;padding:8px 16px calc(24px + env(safe-area-inset-bottom,0px));transform:translateY(105%);visibility:hidden;transition:transform .3s cubic-bezier(.2,.8,.2,1),visibility 0s .3s;z-index:20;box-shadow:0 -8px 30px rgba(0,0,0,.22)}
+.sheet.open{transform:none;visibility:visible;transition:transform .3s cubic-bezier(.2,.8,.2,1),visibility 0s}
+.sheet::before{content:"";display:block;width:38px;height:5px;border-radius:3px;background:var(--line);margin:0 auto}
+.sh-h{display:flex;justify-content:space-between;align-items:center;padding:12px 0 14px}.sh-h b{font-size:20px}
+#ask{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:24px;z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+#ask.open{opacity:1;pointer-events:auto}
+#ask .box{background:var(--card);border-radius:20px;padding:20px;width:100%;max-width:320px;text-align:center}
+#ask p{font-size:17px;font-weight:600;margin-bottom:16px}
+#ask .btn+.btn{margin-top:8px}:root{--on:#fff}:root[data-theme="dark"]{--on:#161616}
+.btn,.add button,.fab,.cd.td i{color:var(--on)}
+.live{font-size:12px;font-weight:600;color:var(--muted);margin:4px 4px 0;min-height:16px}.live b{color:var(--ok);font-size:10px}
+main{width:100%;max-width:560px;overflow-x:clip}
+#askOk{background:var(--out);color:#fff}
+body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#1a1a1a;z-index:50}
+#login{position:fixed;inset:0;background:var(--bg);z-index:60;display:none;align-items:center;justify-content:center;padding:24px}
+#login.on{display:flex}#login .box{width:100%;max-width:340px;text-align:center}
+#login img{width:84px;height:84px;border-radius:19px}#login h1{margin:12px 0 18px}#login .f{text-align:left}
+</style>
+</head>
+<body>
+<main>
+
+<div class="live" id="live"></div>
+<!-- FINANZEN -->
+<section class="view" id="v-finanzen">
+ <header><h1>Finanzen</h1><div class="mon"><button id="fPrev" aria-label="Vorheriger Monat">‹</button><span id="fMonth"></span><button id="fNext" aria-label="Nächster Monat">›</button></div></header>
+ <div class="card"><div class="lbl">Saldo</div><div class="big" id="fSaldo">0,00 €</div>
+  <div class="g2"><div><div class="lbl">Einnahmen</div><div class="v in" id="fIn"></div></div><div><div class="lbl">Ausgaben</div><div class="v out" id="fOut"></div></div></div></div>
+ <div class="card"><div class="lbl">Nach Person</div><div id="fWho"></div></div>
+ <div class="card"><div class="lbl">Nach Kategorie</div><div id="fCats"></div></div>
+ <div class="sheet" id="sh-fin"><div class="sh-h"><b>Neuer Eintrag</b><button class="x" data-close aria-label="Schließen">✕</button></div><form id="fForm">
+  <div class="seg" id="fType"><button type="button" class="on" data-t="out">Ausgabe</button><button type="button" data-t="in">Einnahme</button></div>
+  <div class="f"><label for="fAmt">Betrag (€)</label><input id="fAmt" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0,00" required></div>
+  <div class="r2"><div class="f"><label for="fCat">Kategorie</label><select id="fCat"></select></div><div class="f"><label for="fWhoS">Wer</label><select id="fWhoS"></select></div></div>
+  <div class="f"><label for="fDate">Datum</label><input id="fDate" type="date" required></div>
+  <div class="f"><label for="fNote">Notiz (optional)</label><input id="fNote" maxlength="80"></div>
+  <button class="btn" type="submit">Speichern</button></form></div>
+ <h2>Einträge</h2><div class="card" id="fList"></div>
+ <div class="card"><details><summary>Kategorien verwalten</summary>
+  <div class="lbl">Ausgaben</div><div class="add f"><input id="tOut" maxlength="30" placeholder="z. B. Abo"><button data-add="out">+</button></div><div id="tlOut"></div>
+  <div class="lbl" style="margin-top:12px">Einnahmen</div><div class="add f"><input id="tIn" maxlength="30" placeholder="z. B. Gehalt"><button data-add="in">+</button></div><div id="tlIn"></div></details></div>
+</section>
+
+<!-- EINKAUF -->
+<section class="view" id="v-einkauf">
+ <header><h1>Einkauf</h1></header>
+ <div class="card"><form class="add" id="sForm"><input id="sIn" placeholder="Was brauchen wir?" maxlength="60" autocomplete="off" enterkeyhint="done"><button>Hinzufügen</button></form></div>
+ <div class="card" id="sList"></div>
+ <div class="sp" style="margin:0 4px;font-size:14px;color:var(--muted)"><span id="sCount"></span><button class="x" style="font-size:15px;color:var(--accent);font-weight:600" id="sClear">Erledigte entfernen</button></div>
+</section>
+
+<!-- KALENDER -->
+<section class="view" id="v-kalender">
+ <header><h1>Kalender</h1><div class="mon"><button id="cPrev" aria-label="Vorheriger Monat">‹</button><span id="cMonth"></span><button id="cNext" aria-label="Nächster Monat">›</button></div></header>
+ <div class="card"><div class="wd"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span></div><div class="cg" id="cGrid"></div></div>
+ <h2 id="cDayT"></h2><div class="card" id="cDay"></div>
+ <div class="sheet" id="sh-cal"><div class="sh-h"><b>Neuer Termin</b><button class="x" data-close aria-label="Schließen">✕</button></div><form id="cForm">
+  <div class="f"><label for="cTitle">Titel</label><input id="cTitle" maxlength="80" required></div>
+  <div class="f"><label for="cNote">Notiz (optional)</label><textarea id="cNote" maxlength="500"></textarea></div>
+  <div class="r2 f"><div><label for="cDate">Datum</label><input id="cDate" type="date" required></div><div><label for="cTime">Uhrzeit</label><input id="cTime" type="time"></div></div>
+  <div class="f"><label for="cWho">Wer</label><select id="cWho"></select></div>
+  <div class="f"><label>Farbe</label><div class="sw" id="cSw"></div></div>
+  <button class="btn" type="submit">Termin speichern</button></form></div>
+</section>
+
+<!-- KALORIEN -->
+<section class="view" id="v-kalorien">
+ <header><h1>Kalorien</h1><div class="mon"><button id="kPrev" aria-label="Vorheriger Tag">‹</button><span id="kDay"></span><button id="kNext" aria-label="Nächster Tag">›</button></div></header>
+ <div class="card"><div class="lbl">Gegessen</div><div class="big"><span id="kEat">0</span> <small id="kOf"></small></div><div class="bar" id="kBar"><span style="width:0"></span></div>
+  <div class="g2"><div><div class="lbl">Ziel</div><div class="v" id="kGoal"></div></div><div><div class="lbl" id="kLeftL">Noch frei</div><div class="v" id="kLeft"></div></div></div></div>
+ <div class="sheet" id="sh-kal"><div class="sh-h"><b>Eintrag hinzufügen</b><button class="x" data-close aria-label="Schließen">✕</button></div>
+  <div class="seg" id="kMode"><button class="on" data-m="est">Suchen</button><button data-m="man">Pro 100 g/ml</button><button data-m="dir">Direkt</button></div>
+  <div id="k-est"><div class="f"><label for="kText">Lebensmittel suchen</label><input id="kText" maxlength="80" placeholder="z. B. Haferflocken" enterkeyhint="search"></div>
+   <button class="btn" id="kEstBtn">Suchen</button><div class="hint">Die Daten kommen aus Open Food Facts, einer Community-Datenbank. Die Werte gelten pro 100 g/ml und sind nicht immer genau. Tippe ein Ergebnis an und gib dann die Menge ein.</div>
+   <div id="kRes" style="margin-top:12px"></div></div>
+  <div id="k-man" class="hid"><div class="f"><label for="mN">Name</label><input id="mN" maxlength="60"></div>
+   <div class="r2"><div class="f"><label for="mP">kcal pro 100 g/ml</label><input id="mP" type="number" inputmode="decimal" min="0" step="0.1"></div><div class="f"><label for="mA">Menge</label><input id="mA" type="number" inputmode="decimal" min="0"></div></div>
+   <div class="f"><label for="mU">Einheit</label><select id="mU"><option>g</option><option>ml</option></select></div><div class="res" id="mC">= 0 kcal</div><button class="btn" id="mSave">Speichern</button></div>
+  <div id="k-dir" class="hid"><div class="f"><label for="dN">Name</label><input id="dN" maxlength="60"></div><div class="f"><label for="dK">Kalorien (kcal)</label><input id="dK" type="number" inputmode="numeric" min="0"></div><button class="btn" id="dSave">Speichern</button></div>
+ </div>
+ <h2>Einträge</h2><div class="card" id="kList"></div>
+</section>
+
+<!-- EINSTELLUNGEN -->
+<section class="view" id="v-einstellungen">
+ <header><h1>Einstellungen</h1></header>
+ <div class="card"><div class="lbl">Design</div><div class="th" id="thm"></div></div>
+ <div class="card"><div class="f"><label for="stStart">Startseite</label><select id="stStart"><option value="finanzen">Finanzen</option><option value="einkauf">Einkauf</option><option value="kalender">Kalender</option><option value="kalorien">Kalorien</option></select></div>
+  <div class="f"><label for="stGoal">Kalorienziel pro Tag (kcal)</label><input id="stGoal" type="number" inputmode="numeric" min="1" max="10000"></div>
+  <button class="btn" id="stSave">Speichern</button><div class="hint">Das Ziel legst du selbst fest. Bei Fragen zu einem passenden Wert hilft eine Ärztin, ein Arzt oder eine Ernährungsberatung.</div></div>
+ <div class="card"><div class="lbl">Speicherung</div><div class="hint" style="margin-top:0" id="stInfo"></div></div>
+ <div class="card"><div class="lbl">Konto</div><div class="hint" style="margin:0 0 10px" id="acc"></div><button class="btn s" id="soBtn">Abmelden</button></div>
+ <div class="card"><div class="lbl">Backup</div>
+  <button class="btn" id="bkDown">Backup herunterladen</button>
+  <button class="btn s" id="bkUp" style="margin-top:8px">Backup wiederherstellen</button>
+  <input type="file" id="bkFile" accept=".json,application/json" style="position:absolute;opacity:0;width:0;height:0">
+  <div class="hint">Sichert Finanzen, Einkauf, Kalender, Kalorien und Einstellungen in einer Datei. Beim Wiederherstellen werden Einträge ergänzt, es wird nichts gelöscht.</div>
+  <details style="margin-top:10px"><summary>Als Text kopieren oder einfügen</summary>
+   <div class="f" style="margin-top:10px"><textarea id="bkText" placeholder="Backup-Text hier erzeugen oder einfügen" style="min-height:90px"></textarea></div>
+   <div class="r2"><button class="btn s" id="bkMake">Text erzeugen</button><button class="btn s" id="bkRestore">Aus Text laden</button></div></details></div>
+</section>
+
+</main>
+
+<nav id="nav">
+ <a href="#finanzen" data-v="finanzen"><svg viewBox="0 0 24 24"><path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l12-3v3M17 13.5h.01"/></svg>Finanzen</a>
+ <a href="#einkauf" data-v="einkauf"><svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6"/></svg>Einkauf</a>
+ <a href="#kalender" data-v="kalender"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Kalender</a>
+ <a href="#kalorien" data-v="kalorien"><svg viewBox="0 0 24 24"><path d="M12 3c1 4 6 6 6 11a6 6 0 0 1-12 0c0-2 1-3 2-4 0 2 1 3 2 3 0-4 1-7 2-10z"/></svg>Kalorien</a>
+ <a href="#einstellungen" data-v="einstellungen"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Mehr</a>
+</nav>
+<button class="fab hid" id="fab" aria-label="Hinzufügen">+</button>
+<div id="bd"></div>
+<div id="ask"><div class="box"><p id="askT"></p><button class="btn" id="askOk">Löschen</button><button class="btn s" id="askNo">Abbrechen</button></div></div>
+<div id="login"><div class="box"><img src="apple-touch-icon.png" alt=""><h1>Alltag</h1>
+ <div class="f"><input id="lEmail" type="email" placeholder="E-Mail" autocomplete="username" autocapitalize="none"></div>
+ <div class="f"><input id="lPass" type="password" placeholder="Passwort (mind. 6 Zeichen)" autocomplete="current-password"></div>
+ <div class="hint" id="lErr" style="color:var(--out);min-height:18px;margin:0 0 10px"></div>
+ <button class="btn" id="lIn">Anmelden</button><button class="btn s" id="lNew" style="margin-top:8px">Konto erstellen</button></div></div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js";
+import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js";
+import {initializeFirestore,getFirestore,persistentLocalCache,persistentMultipleTabManager,collection as fsCol,doc as fsDoc,onSnapshot as fsSnap,setDoc,updateDoc,deleteDoc} from "https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js";
+
+/* >>> Hier die Firebase-Konfiguration einfügen (Projekteinstellungen > Deine Apps) <<< */
+const firebaseConfig={apiKey:"AIzaSyCdh2--IhngFTMDgKBBAUQazfrdvcIzkX0",authDomain:"mj-app-1104.firebaseapp.com",projectId:"mj-app-1104",storageBucket:"mj-app-1104.firebasestorage.app",messagingSenderId:"697287622156",appId:"1:697287622156:web:f49c316dcd2e1d771d3829"};
+
+(async()=>{
+const $=id=>document.getElementById(id),D=document.documentElement;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const ymd=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const eur=n=>n.toLocaleString("de-DE",{style:"currency",currency:"EUR"}),nf=n=>Math.round(n).toLocaleString("de-DE");
+const fd=iso=>iso.split("-").reverse().join(".");
+const lsGet=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const MONTHS=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+const WD=["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"];
+const EMPTY=t=>`<div class="empty">${t}</div>`;
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),1500)}
+const run=async(f,err)=>{try{await f()}catch(e){toast(err||"Aktion fehlgeschlagen")}};
+
+/* ---------- Routing ---------- */
+const VIEWS=["finanzen","einkauf","kalender","kalorien","einstellungen"];
+let prefs={theme:D.dataset.theme||"light",start:"finanzen",goal:0,...lsGet("sa.prefs",{})};
+function renderLive(){try{const el=$("live");if(cur==="einstellungen"){el.textContent="";return}
+ let t="Kein Sync · nur dieses Gerät",ok=false;
+ if(cur==="kalorien"){if(me){t="Privat gespeichert · nur du siehst das";ok=true}else t="Nur auf diesem Gerät gespeichert"}
+ else if(!navigator.onLine)t="Offline · Sync folgt später";else if(db&&!live)t=errCode==="permission-denied"?"Kein Zugriff – E-Mail in den Regeln prüfen":"Verbindung unterbrochen";else if(live){t="Live-Sync aktiv";ok=true}
+ el.innerHTML=(ok?"<b>●</b> ":"○ ")+esc(t)}catch(e){}}
+const SHEETS={finanzen:"sh-fin",kalender:"sh-cal",kalorien:"sh-kal"};let cur="finanzen",openSh=null;
+function openSheet(id){closeSheet();openSh=id;$(id).classList.add("open");$("bd").classList.add("on")}
+function closeSheet(){if(openSh)$(openSh).classList.remove("open");openSh=null;$("bd").classList.remove("on")}
+function ask(msg,ok){return new Promise(res=>{$("askT").textContent=msg;$("askOk").textContent=ok||"Löschen";$("ask").classList.add("open");
+ const done=v=>{$("ask").classList.remove("open");$("askOk").onclick=$("askNo").onclick=null;res(v)};$("askOk").onclick=()=>done(true);$("askNo").onclick=()=>done(false)})}
+$("ask").onclick=e=>{if(e.target.id==="ask")$("askNo").click()};$("bd").onclick=closeSheet;
+$("fab").onclick=()=>{if(SHEETS[cur])openSheet(SHEETS[cur])};
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=closeSheet);
+addEventListener("keydown",e=>{if(e.key==="Escape"){if($("ask").classList.contains("open"))$("askNo").click();else closeSheet()}});
+function route(){let h=location.hash.slice(1);if(!VIEWS.includes(h))h=VIEWS.includes(prefs.start)?prefs.start:"finanzen";cur=h;closeSheet();$("fab").classList.toggle("hid",!SHEETS[h]);renderLive();
+ VIEWS.forEach(v=>{$("v-"+v).classList.toggle("on",v===h)});
+ document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.v===h));scrollTo(0,0)}
+addEventListener("hashchange",route);
+
+/* ---------- Design ---------- */
+const THEMES=[["light","Hell","#ffffff"],["dark","Dunkel","#1a1a1a"],["pink","Pink","#d88bdb"]];
+function applyTheme(){D.dataset.theme=prefs.theme;try{localStorage.setItem("sa.theme",prefs.theme)}catch(e){}
+ const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=getComputedStyle(D).getPropertyValue("--bg").trim()||"#f5f5f7"}
+applyTheme();route();
+
+/* ---------- Verbindung (Firebase) ---------- */
+let errCode="",live=true;
+const authMsg=e=>({"auth/invalid-credential":"E-Mail oder Passwort falsch","auth/invalid-email":"Ungültige E-Mail","auth/weak-password":"Passwort zu kurz (mind. 6 Zeichen)","auth/email-already-in-use":"Diese E-Mail hat schon ein Konto – bitte anmelden","auth/network-request-failed":"Keine Internetverbindung","auth/missing-password":"Bitte Passwort eingeben"}[e&&e.code]||"Anmeldung fehlgeschlagen");
+if(/^DEIN/.test(firebaseConfig.apiKey)){$("login").classList.add("on");$("lErr").textContent="Firebase ist noch nicht eingerichtet (firebaseConfig in index.html).";return}
+const fb=initializeApp(firebaseConfig),auth=getAuth(fb);
+let fs;try{fs=initializeFirestore(fb,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})})}catch(e){fs=getFirestore(fb)}
+let user=await new Promise(res=>{const un=onAuthStateChanged(auth,u=>{un();res(u)})});
+if(!user){user=await new Promise(res=>{$("login").classList.add("on");
+ const go=async mk=>{$("lErr").textContent="";try{const c=await(mk?createUserWithEmailAndPassword:signInWithEmailAndPassword)(auth,$("lEmail").value.trim(),$("lPass").value);res(c.user)}catch(e){$("lErr").textContent=authMsg(e)}};
+ $("lIn").onclick=()=>go(false);$("lNew").onclick=()=>go(true)});$("login").classList.remove("on")}
+const P=p=>p.split("/");
+const bad=er=>e=>{errCode=(e&&e.code)||"";live=false;renderLive();if(er)er(e)};
+const good=()=>{if(!live){live=true;errCode="";renderLive()}};
+const mkDoc=path=>({
+ onSnapshot:(cb,er)=>fsSnap(fsDoc(fs,...P(path)),s=>{good();cb({exists:s.exists(),data:()=>s.data()})},bad(er)),
+ set:o=>setDoc(fsDoc(fs,...P(path)),o),update:o=>updateDoc(fsDoc(fs,...P(path)),o),delete:()=>deleteDoc(fsDoc(fs,...P(path)))});
+const mkCol=path=>({
+ onSnapshot:(cb,er)=>fsSnap(fsCol(fs,...P(path)),s=>{good();cb({docs:s.docs.map(d=>({id:d.id,exists:true,data:()=>d.data()}))})},bad(er)),
+ doc:id=>mkDoc(path+"/"+id)});
+const db=mkCol("shared/fam");db.collection=n=>mkCol("shared/fam/"+n);db.doc=p=>mkDoc("shared/fam/meta/"+p.replace("/","_"));
+const me=mkCol("users/"+user.uid+"/data");
+const dl={save:async({filename,data})=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type:"application/json"}));a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}};
+$("acc").textContent="Angemeldet als "+user.email;$("soBtn").onclick=()=>signOut(auth).then(()=>location.reload());
+addEventListener("online",()=>renderLive());addEventListener("offline",()=>renderLive());
+const store=(name,cb)=>{let list=[];const key="sa."+name;
+ if(db)db.collection(name).onSnapshot(s=>{list=s.docs.filter(d=>d.exists).map(d=>({id:d.id,...d.data()}));cb()},()=>{live=false;renderSet()});
+ else{list=lsGet(key,[]);setTimeout(cb)}
+ const save=()=>lsSet(key,list);
+ return{get:()=>list,
+  async add(o){const id=uid();if(db)await db.collection(name).doc(id).set(o);else{list.push({id,...o});save();cb()}},
+  async set(id,p){if(db)await db.collection(name).doc(id).update(p);else{Object.assign(list.find(x=>x.id===id)||{},p);save();cb()}},
+  async put(id,o){if(db)await db.collection(name).doc(id).set(o);else{const i=list.findIndex(x=>x.id===id);if(i>=0)list[i]={id,...o};else list.push({id,...o});save();cb()}},
+  async del(id){if(db)await db.collection(name).doc(id).delete();else{list=list.filter(x=>x.id!==id);save();cb()}}}};
+
+/* ---------- Finanzen ---------- */
+const PEOPLE=["Mert","Frau","Gemeinsam"];
+const DEF={out:["Einkauf","Lebensmittel","Abo","Fahrzeug","Wohnen","Freizeit","Gesundheit","Sonstiges"],in:["Gehalt","Nebenverdienst","Erstattung","Sonstiges"]};
+let tags=lsGet("sa.tags",null)||JSON.parse(JSON.stringify(DEF)),fType="out",fm=new Date();fm.setDate(1);
+const fin=store("entries",renderFin);
+if(db)db.doc("settings/main").onSnapshot(s=>{if(s.exists)tags={...DEF,...s.data()};renderFin()});
+const saveTags=async()=>{if(db)await db.doc("settings/main").set(tags);else{lsSet("sa.tags",tags);renderFin()}};
+const opts=a=>a.map(x=>`<option>${esc(x)}</option>`).join("");
+$("fWhoS").innerHTML=opts(PEOPLE);$("fDate").value=ymd(new Date());
+function renderFin(){
+ const ym=ymd(fm).slice(0,7),L=fin.get().filter(e=>e.date.startsWith(ym)).sort((a,b)=>b.date.localeCompare(a.date)||(b.createdAt||0)-(a.createdAt||0));
+ $("fMonth").textContent=MONTHS[fm.getMonth()]+" "+fm.getFullYear();
+ const sum=t=>L.filter(e=>e.type===t).reduce((s,e)=>s+e.amount,0),i=sum("in"),o=sum("out"),n=i-o;
+ $("fSaldo").textContent=eur(n);$("fSaldo").style.color=n<0?"var(--out)":"var(--text)";$("fIn").textContent=eur(i);$("fOut").textContent=eur(o);
+ const w={};L.forEach(e=>w[e.who]=(w[e.who]||0)+(e.type==="out"?-e.amount:e.amount));
+ $("fWho").innerHTML=Object.keys(w).length?Object.entries(w).sort().map(([k,v])=>`<div class="ln"><span>${esc(k)}</span><b class="${v<0?"out":"in"}">${eur(v)}</b></div>`).join(""):EMPTY("Noch keine Einträge");
+ const t={};L.forEach(e=>{const k=e.type+"|"+e.tag;t[k]=(t[k]||0)+e.amount});const rows=Object.entries(t).sort((a,b)=>b[1]-a[1]),mx=rows.length?rows[0][1]:1;
+ $("fCats").innerHTML=rows.length?rows.map(([k,v])=>{const[ty,tg]=k.split("|");return`<div class="ln col"><div class="sp"><span>${esc(tg)}</span><b class="${ty}">${ty==="out"?"−":"+"}${eur(v)}</b></div><div class="bar"><span style="width:${v/mx*100}%"></span></div></div>`}).join(""):EMPTY("Noch keine Einträge");
+ $("fList").innerHTML=L.length?L.map(e=>`<div class="ln"><div class="t">${esc(e.tag)}${e.note?" · "+esc(e.note):""}<small>${fd(e.date)} · ${esc(e.who)}</small></div><b class="${e.type}">${e.type==="in"?"+":"−"}${eur(e.amount)}</b><button class="x" data-del="${esc(e.id)}" aria-label="Löschen">✕</button></div>`).join(""):EMPTY("Keine Einträge in diesem Monat");
+ const sel=$("fCat"),pv=sel.value;sel.innerHTML=opts(tags[fType]);if(tags[fType].includes(pv))sel.value=pv;
+ [["out","tlOut"],["in","tlIn"]].forEach(([k,id])=>$(id).innerHTML=tags[k].map((x,j)=>`<div class="ln"><span>${esc(x)}</span><button class="x" data-rm="${k}:${j}" aria-label="Entfernen">✕</button></div>`).join(""));
+}
+$("fPrev").onclick=()=>{fm.setMonth(fm.getMonth()-1);renderFin()};$("fNext").onclick=()=>{fm.setMonth(fm.getMonth()+1);renderFin()};
+$("fType").onclick=e=>{const t=e.target.dataset.t;if(!t)return;fType=t;[...$("fType").children].forEach(b=>b.classList.toggle("on",b===e.target));renderFin()};
+$("fForm").onsubmit=e=>{e.preventDefault();const a=Math.round(parseFloat($("fAmt").value)*100)/100;if(!(a>0))return toast("Bitte einen Betrag eingeben");
+ const o={type:fType,amount:a,tag:$("fCat").value,date:$("fDate").value,who:$("fWhoS").value,note:$("fNote").value.trim(),createdAt:Date.now()};
+ run(async()=>{await fin.add(o);$("fAmt").value="";$("fNote").value="";fm=new Date(o.date+"T12:00:00");fm.setDate(1);renderFin();closeSheet();toast("Gespeichert")},"Speichern fehlgeschlagen")};
+$("fList").onclick=e=>{const id=e.target.dataset.del;if(id)ask("Diesen Eintrag löschen?").then(ok=>ok&&run(()=>fin.del(id)))};
+document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{const k=b.dataset.add,inp=$(k==="out"?"tOut":"tIn"),v=inp.value.trim();if(!v)return;
+ if(tags[k].some(x=>x.toLowerCase()===v.toLowerCase()))return toast("Gibt es schon");tags[k].push(v);inp.value="";run(saveTags)});
+["tlOut","tlIn"].forEach(id=>$(id).onclick=e=>{const r=e.target.dataset.rm;if(!r)return;const[k,j]=r.split(":");tags[k].splice(+j,1);run(saveTags)});
+
+/* ---------- Einkauf ---------- */
+const shop=store("items",renderShop);
+function renderShop(){const L=shop.get().slice().sort((a,b)=>(a.done-b.done)||(a.createdAt-b.createdAt));
+ $("sList").innerHTML=L.length?L.map(i=>`<div class="ln ${i.done?"done":""}" data-id="${esc(i.id)}" style="cursor:pointer"><div class="chk">${i.done?"✓":""}</div><div class="t nm">${esc(i.name)}</div><button class="x" data-del="${esc(i.id)}" aria-label="Löschen">✕</button></div>`).join(""):EMPTY("Die Liste ist leer");
+ const open=L.filter(i=>!i.done).length;$("sCount").textContent=open+" offen";$("sClear").disabled=open===L.length}
+$("sForm").onsubmit=e=>{e.preventDefault();const n=$("sIn").value.trim();if(!n)return;$("sIn").value="";run(()=>shop.add({name:n,done:false,createdAt:Date.now()}))};
+$("sList").onclick=e=>{const d=e.target.closest("[data-del]");if(d)return run(()=>shop.del(d.dataset.del));
+ const r=e.target.closest("[data-id]");if(r){const it=shop.get().find(x=>x.id===r.dataset.id);if(it)run(()=>shop.set(it.id,{done:!it.done}))}};
+$("sClear").onclick=()=>run(async()=>{for(const i of shop.get().filter(x=>x.done))await shop.del(i.id);toast("Erledigte entfernt")});
+
+/* ---------- Kalender ---------- */
+const COLORS=[["Rot","#ff3b30"],["Gelb","#ffcc00"],["Grün","#34c759"],["Blau","#0a84ff"],["Lila","#af52de"],["Orange","#ff9500"],["Pink","#ff2d92"],["Türkis","#30b0c7"]];
+const cal=store("events",renderCal);let cm=new Date(),cs=ymd(new Date());cm.setDate(1);
+$("cWho").innerHTML=opts(PEOPLE);$("cDate").value=cs;
+$("cSw").innerHTML=COLORS.map((c,i)=>`<input type="radio" name="cc" id="cc${i}" value="${c[1]}" ${i===3?"checked":""}><label for="cc${i}" title="${c[0]}" style="background:${c[1]}"></label>`).join("");
+const evOn=iso=>cal.get().filter(e=>e.date===iso).sort((a,b)=>(a.time||"99").localeCompare(b.time||"99"));
+function renderCal(){
+ const f=new Date(cm.getFullYear(),cm.getMonth(),1),st=new Date(f);st.setDate(1-(f.getDay()+6)%7);const td=ymd(new Date());let h="";
+ for(let i=0;i<42;i++){const d=new Date(st);d.setDate(st.getDate()+i);const iso=ymd(d),L=evOn(iso);
+  h+=`<button class="cd ${d.getMonth()!==cm.getMonth()?"o":""} ${iso===td?"td":""} ${iso===cs?"sel":""}" data-d="${iso}"><i>${d.getDate()}</i><span class="dots">${L.slice(0,3).map(e=>`<span class="dot" style="background:${esc(e.color)}"></span>`).join("")}</span></button>`}
+ $("cGrid").innerHTML=h;$("cMonth").textContent=MONTHS[cm.getMonth()]+" "+cm.getFullYear();
+ const[y,m,d]=cs.split("-").map(Number);$("cDayT").textContent=WD[new Date(y,m-1,d).getDay()]+", "+fd(cs);
+ const L=evOn(cs);$("cDay").innerHTML=L.length?L.map(e=>`<div class="ev"><div class="b" style="background:${esc(e.color)}"></div><div class="t"><div>${esc(e.title)}</div><small style="color:var(--muted);font-size:13px">${e.time?esc(e.time)+" Uhr · ":""}${esc(e.who)}</small>${e.note?`<div class="note">${esc(e.note)}</div>`:""}</div><button class="x" data-del="${esc(e.id)}" aria-label="Löschen">✕</button></div>`).join(""):EMPTY("Keine Termine an diesem Tag")}
+$("cPrev").onclick=()=>{cm.setMonth(cm.getMonth()-1);renderCal()};$("cNext").onclick=()=>{cm.setMonth(cm.getMonth()+1);renderCal()};
+$("cGrid").onclick=e=>{const b=e.target.closest("[data-d]");if(!b)return;cs=b.dataset.d;$("cDate").value=cs;renderCal()};
+$("cForm").onsubmit=e=>{e.preventDefault();const o={title:$("cTitle").value.trim(),note:$("cNote").value.trim(),date:$("cDate").value,time:$("cTime").value||"",who:$("cWho").value,color:document.querySelector('input[name="cc"]:checked').value,createdAt:Date.now()};
+ if(!o.title||!o.date)return;run(async()=>{await cal.add(o);$("cTitle").value="";$("cNote").value="";$("cTime").value="";cs=o.date;const[y,m]=o.date.split("-").map(Number);cm=new Date(y,m-1,1);renderCal();closeSheet();toast("Termin gespeichert")},"Speichern fehlgeschlagen")};
+$("cDay").onclick=e=>{const id=e.target.dataset.del;if(id)ask("Diesen Termin löschen?").then(ok=>ok&&run(()=>cal.del(id)))};
+
+/* ---------- Kalorien (privat) ---------- */
+let kd=new Date(),days=me?{}:lsGet("sa.cal",{}),est=null;
+const kEntries=()=>days[ymd(kd)]||[];
+async function saveDay(key){if(me)await me.doc("day-"+key).set({entries:days[key]||[]});else lsSet("sa.cal",days);renderKal()}
+function renderKal(){const key=ymd(kd),L=kEntries(),sum=L.reduce((a,e)=>a+e.kcal,0),g=prefs.goal||0;
+ $("kDay").textContent=key===ymd(new Date())?"Heute":kd.toLocaleDateString("de-DE",{weekday:"short",day:"2-digit",month:"2-digit"});
+ $("kEat").textContent=nf(sum);$("kOf").textContent=g?"von "+nf(g)+" kcal":"kcal";$("kGoal").textContent=g?nf(g)+" kcal":"nicht gesetzt";
+ const bar=$("kBar"),left=g-sum;
+ if(g){$("kLeftL").textContent=left>=0?"Noch frei":"Über dem Ziel";$("kLeft").textContent=nf(Math.abs(left))+" kcal";bar.classList.toggle("over",left<0);bar.firstElementChild.style.width=Math.min(100,sum/g*100)+"%"}
+ else{$("kLeftL").textContent="Noch frei";$("kLeft").textContent="Ziel unter „Mehr“ setzen";bar.classList.remove("over");bar.firstElementChild.style.width="0"}
+ $("kList").innerHTML=L.length?L.map(e=>`<div class="ln"><div class="t">${esc(e.name)}${e.detail?`<small>${esc(e.detail)}</small>`:""}</div><b>${nf(e.kcal)} kcal</b><button class="x" data-del="${esc(e.id)}" aria-label="Löschen">✕</button></div>`).join(""):EMPTY("Noch nichts eingetragen")}
+async function addK(name,kcal,detail){const key=ymd(kd);days[key]=(days[key]||[]).concat({id:uid(),name,kcal:Math.round(kcal),detail:detail||""});run(async()=>{await saveDay(key);closeSheet();toast("Gespeichert")},"Speichern fehlgeschlagen")}
+$("kPrev").onclick=()=>{kd.setDate(kd.getDate()-1);renderKal()};$("kNext").onclick=()=>{kd.setDate(kd.getDate()+1);renderKal()};
+$("kMode").onclick=e=>{const m=e.target.dataset.m;if(!m)return;[...$("kMode").children].forEach(b=>b.classList.toggle("on",b===e.target));["est","man","dir"].forEach(k=>$("k-"+k).classList.toggle("hid",k!==m))};
+$("kList").onclick=e=>{const id=e.target.dataset.del;if(!id)return;const key=ymd(kd);days[key]=kEntries().filter(x=>x.id!==id);run(()=>saveDay(key))};
+const calc=()=>{const v=(parseFloat($("mP").value)||0)*(parseFloat($("mA").value)||0)/100;$("mC").textContent="= "+nf(v)+" kcal"};
+let found=[];
+$("kEstBtn").onclick=async()=>{const q=$("kText").value.trim();if(!q)return;const b=$("kEstBtn");b.disabled=true;b.textContent="Suche …";
+ try{const r=await fetch("https://world.openfoodfacts.org/cgi/search.pl?search_simple=1&action=process&json=1&page_size=20&fields=product_name,brands,nutriments&search_terms="+encodeURIComponent(q));
+  const j=await r.json();found=(j.products||[]).filter(p=>p.product_name&&p.nutriments&&p.nutriments["energy-kcal_100g"]!=null).slice(0,10);
+  $("kRes").innerHTML=found.length?found.map((p,i)=>`<div class="ln" data-p="${i}" style="cursor:pointer"><div class="t">${esc(p.product_name)}<small>${esc(p.brands||"")}</small></div><b>${nf(p.nutriments["energy-kcal_100g"])} kcal</b></div>`).join(""):EMPTY("Nichts gefunden – versuche ein einfacheres Wort");
+ }catch(e){toast("Suche fehlgeschlagen")}finally{b.disabled=false;b.textContent="Suchen"}};
+$("kText").addEventListener("keydown",e=>{if(e.key==="Enter")$("kEstBtn").click()});
+$("kRes").onclick=e=>{const r=e.target.closest("[data-p]");if(!r)return;const p=found[+r.dataset.p];
+ $("mN").value=p.product_name.slice(0,60);$("mP").value=Math.round(p.nutriments["energy-kcal_100g"]*10)/10;$("mA").value="";calc();
+ [...$("kMode").children].forEach(b=>b.classList.toggle("on",b.dataset.m==="man"));["est","man","dir"].forEach(k=>$("k-"+k).classList.toggle("hid",k!=="man"));$("mA").focus()};
+["mP","mA"].forEach(id=>$(id).addEventListener("input",calc));
+$("mSave").onclick=()=>{const p=parseFloat($("mP").value),a=parseFloat($("mA").value),n=$("mN").value.trim();if(!n||!(p>=0)||!(a>0))return toast("Name, kcal und Menge ausfüllen");
+ addK(n,p*a/100,`${nf(a)} ${$("mU").value} · ${p.toLocaleString("de-DE")} kcal/100 ${$("mU").value}`);["mN","mP","mA"].forEach(id=>$(id).value="");calc()};
+$("dSave").onclick=()=>{const k=parseFloat($("dK").value),n=$("dN").value.trim();if(!n||!(k>=0))return toast("Name und kcal ausfüllen");addK(n,k,"");$("dN").value="";$("dK").value=""};
+if(me)me.onSnapshot(s=>{days={};s.docs.forEach(d=>{if(!d.exists)return;const v=d.data();if(d.id==="prefs"){prefs={...prefs,...v};lsSet("sa.prefs",prefs);applyTheme();renderSet()}else if(d.id.startsWith("day-"))days[d.id.slice(4)]=v.entries||[]});renderKal()},()=>{live=false;renderSet()});
+
+/* ---------- Einstellungen ---------- */
+$("thm").innerHTML=THEMES.map(t=>`<button data-th="${t[0]}"><i style="background:${t[2]}"></i>${t[1]}</button>`).join("");
+async function savePrefs(p){prefs={...prefs,...p};lsSet("sa.prefs",prefs);applyTheme();renderSet();renderKal();if(me)await me.doc("prefs").set(prefs)}
+function renderSet(){renderLive();document.querySelectorAll("#thm button").forEach(b=>b.classList.toggle("on",b.dataset.th===prefs.theme));
+ if(document.activeElement!==$("stGoal"))$("stGoal").value=prefs.goal||"";$("stStart").value=prefs.start||"finanzen";
+ $("stInfo").textContent=(live?"Live verbunden. ":"Nur auf diesem Gerät gespeichert. ")+"Finanzen, Einkauf und Kalender werden mit allen geteilt, die sich mit einer freigeschalteten E-Mail anmelden. Kalorien, Design und Startseite sind privat."}
+$("thm").onclick=e=>{const b=e.target.closest("[data-th]");if(b)run(()=>savePrefs({theme:b.dataset.th}))};
+$("stSave").onclick=()=>{const g=Math.round(parseFloat($("stGoal").value)||0);if(g<0||g>10000)return toast("Bitte einen gültigen Wert eingeben");
+ run(async()=>{await savePrefs({goal:g,start:$("stStart").value});toast("Gespeichert")},"Speichern fehlgeschlagen")};
+
+/* ---------- Backup ---------- */
+const bkText=()=>JSON.stringify({app:"alltag",version:1,exported:new Date().toISOString(),entries:fin.get(),items:shop.get(),events:cal.get(),tags,days,prefs},null,1);
+$("bkDown").onclick=()=>run(async()=>{const name="alltag-backup-"+ymd(new Date())+".json";
+ if(dl){try{await dl.save({filename:name,data:bkText()});toast("Backup bereit")}catch(e){if(!e||e.code!=="declined"){$("bkText").value=bkText();$("bkText").closest("details").open=true;toast("Download nicht möglich – Text kopieren")}}}
+ else{$("bkText").value=bkText();$("bkText").closest("details").open=true;toast("Download nicht möglich – Text kopieren")}},"Backup fehlgeschlagen");
+async function bkImport(txt){let o;try{o=JSON.parse(txt)}catch(e){return toast("Datei nicht lesbar")}
+ if(!o||o.app!=="alltag")return toast("Das ist kein Backup dieser App");
+ if(!await ask("Backup einspielen? Fehlende Einträge werden ergänzt, gleiche Einträge überschrieben. Geteilte Daten sehen auch die anderen.","Einspielen"))return;
+ run(async()=>{const put=async(st,L)=>{for(const x of L||[]){const{id,...r}=x;if(id)await st.put(id,r)}};
+  await put(fin,o.entries);await put(shop,o.items);await put(cal,o.events);
+  if(o.tags){["out","in"].forEach(k=>(o.tags[k]||[]).forEach(t=>{if(!tags[k].some(z=>z.toLowerCase()===t.toLowerCase()))tags[k].push(t)}));await saveTags()}
+  for(const[k,L]of Object.entries(o.days||{})){const have=new Set((days[k]||[]).map(e=>e.id));days[k]=(days[k]||[]).concat(L.filter(e=>!have.has(e.id)));await saveDay(k)}
+  if(o.prefs)await savePrefs({theme:o.prefs.theme||prefs.theme,start:o.prefs.start||prefs.start,goal:o.prefs.goal??prefs.goal});
+  toast("Backup eingespielt")},"Einspielen fehlgeschlagen")}
+$("bkUp").onclick=()=>$("bkFile").click();
+$("bkFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>bkImport(String(r.result));r.readAsText(f);e.target.value=""};
+$("bkMake").onclick=()=>{$("bkText").value=bkText();toast("Text erzeugt")};
+$("bkRestore").onclick=()=>bkImport($("bkText").value);
+
+renderFin();renderShop();renderCal();renderKal();renderSet();
+})();
+</script>
+</body>
+</html>
