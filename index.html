@@ -317,7 +317,7 @@ nav a.has::after{content:"";position:absolute;top:1px;left:calc(50% + 8px);width
 <div class="r2"><button class="btn s" id="bkMake">Text erzeugen</button><button class="btn s" id="bkRestore">Aus Text laden</button></div></details></div>
 <div class="card"><div class="lbl">App aktualisieren</div><div class="hint" id="swInfo" style="margin-top:0">Offline-Modus wird eingerichtet …</div><button class="btn s" id="updBtn" style="margin-top:10px">Neu laden und Cache leeren</button></div>
 <div class="card"><div class="lbl">Version</div>
-<div class="hint" style="margin-top:0" id="verApp">App: v2026-11-15-4</div>
+<div class="hint" style="margin-top:0" id="verApp">App: v2026-11-15-5</div>
 <div class="hint" id="verWorker">KI-Worker: wird geprüft …</div></div>
 </section>
 
@@ -765,7 +765,7 @@ $("pwEye").onclick=()=>{const on=$("pwPass").style.webkitTextSecurity==="disc";$
 $("pwGen").onclick=()=>{const cs="abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789!?#$%&*+-=",a=crypto.getRandomValues(new Uint32Array(18));$("pwPass").value=[...a].map(n=>cs[n%cs.length]).join("")};
 
 /* ---------- Benachrichtigungen (Push) ---------- */
-const VAPID_KEY="HIER_VAPID_KEY",PUSH_WORKER="https://mj-push.mertm-malkoc.workers.dev";
+const VAPID_KEY="BMcQkIlzAcwE9JEG19crSo05ijyIu0t0Z_Head_XhsGhkepqmNfxnEW2Pk_GTVvU69QwKIiV7ZjhlGFxhvZqNlA",PUSH_WORKER="https://mj-push.mertm-malkoc.workers.dev";
 const PUSHAREAS=[["finanzen","Finanzen"],["einkauf","Einkauf"],["kalender","Kalender"],["spiele","Spiele"],["quran","Quran"]];
 const PTITLE={finanzen:"Finanzen",einkauf:"Einkauf",kalender:"Kalender",spiele:"Spiele",quran:"Quran"};
 const nm=()=>prefs.who||"Jemand";
