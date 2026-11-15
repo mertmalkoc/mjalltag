@@ -9,13 +9,13 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#f5f5f7">
+<meta name="theme-color" content="#0d0d0e">
 <title>Alltag</title>
-<script>try{var t=localStorage.getItem("sa.theme");if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t}catch(e){}</script>
+<script>try{var t=localStorage.getItem("sa.theme");if(!t||t==="light")t="dark";document.documentElement.dataset.theme=t}catch(e){}</script>
 <style>
-:root{--bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--muted:#6e6e73;--line:#e5e5ea;--accent:#7b4ed0;--ok:#248a3d;--out:#d70015;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--bg:#0d0d0e;--card:#1a1a1a;--text:#f5f5f7;--muted:#9b9ba1;--line:#2d2d30;--accent:#b48af0;--ok:#30d158;--out:#ff6b6b;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme]){--bg:#000;--card:#1c1c1e;--text:#f5f5f7;--muted:#98989d;--line:#38383a;--ok:#30d158;--out:#ff453a;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0c0c14;--card:#18181f;--text:#f2f2f7;--muted:#9696a6;--line:#2a2a36;--accent:#b48af0;--ok:#30d158;--out:#ff6b6b;color-scheme:dark}
+:root[data-theme="dark"]{--bg:#0d0d0e;--card:#1a1a1a;--text:#f5f5f7;--muted:#9b9ba1;--line:#2d2d30;--accent:#b48af0;--ok:#30d158;--out:#ff6b6b;color-scheme:dark}
 :root[data-theme="pink"]{--bg:#f3d1f2;--card:#fbe9fa;--text:#2a1130;--muted:#7e4a88;--line:#e5b4e6;--accent:#b043bd;--ok:#1b8a4e;--out:#b8103c;color-scheme:light}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -122,7 +122,6 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area
 :root[data-theme="pink"]{--brand-a:#b043bd;--brand-b:#d4146a}
 @keyframes switch{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 @keyframes drift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-:root[data-theme="dark"] body{background:linear-gradient(-45deg,#0c0c14,#15152a,#0e1828,#130e22);background-size:400% 400%;animation:drift 18s ease infinite}
 .btn,.add button,.fab,.cd.td i,.seg button.on{background:linear-gradient(120deg,var(--brand-a),var(--brand-b),var(--brand-a));background-size:200% 200%;animation:switch 6s ease infinite;color:#fff}
 .btn,.fab{box-shadow:0 4px 14px rgba(89,78,207,.25)}
 .btn.s{background:var(--bg);color:var(--accent);animation:none;box-shadow:none}
@@ -145,6 +144,14 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area
 .v-ar{font-size:26px;line-height:2;text-align:right;direction:rtl;font-family:"Geeza Pro","Traditional Arabic",serif}
 .v-de{font-size:15px;line-height:1.5;color:var(--muted);margin:2px 0 14px}
 .v-nr{display:inline-block;font-size:12px;color:var(--accent);font-weight:600;margin-right:6px}
+
+/* ===== v3: Hinweispunkte, Individuell, Menü-Einstellung ===== */
+.tile{position:relative}
+.tile.has::after{content:"";position:absolute;top:12px;right:12px;width:10px;height:10px;border-radius:50%;background:#ff3b30;box-shadow:0 0 0 2px var(--card)}
+nav a{position:relative;min-width:0}
+nav a.has::after{content:"";position:absolute;top:1px;left:calc(50% + 8px);width:9px;height:9px;border-radius:50%;background:#ff3b30;box-shadow:0 0 0 2px var(--card)}
+.crow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.crow input[type=color]{width:52px;height:34px;padding:2px;border-radius:10px;flex:none;cursor:pointer}
 </style>
 </head>
 <body>
@@ -158,12 +165,12 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area
 <a class="card tcard" href="#quran"><div class="icon"><svg viewBox="0 0 24 24"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/></svg></div><div class="t"><div style="font-weight:600" id="hSura"></div><div class="hint" style="margin:2px 0 0" id="hSuraSub"></div></div></a>
 <h2>Bereiche</h2>
 <div class="tiles">
-<a class="tile" href="#finanzen"><div class="icon"><svg viewBox="0 0 24 24"><path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l12-3v3M17 13.5h.01"/></svg></div><div><div class="tt">Finanzen</div><div class="ts" id="tFin"></div></div></a>
-<a class="tile" href="#einkauf"><div class="icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6"/></svg></div><div><div class="tt">Einkauf</div><div class="ts" id="tShop"></div></div></a>
-<a class="tile" href="#kalender"><div class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div><div><div class="tt">Kalender</div><div class="ts" id="tCal"></div></div></a>
+<a class="tile" data-k="finanzen" href="#finanzen"><div class="icon"><svg viewBox="0 0 24 24"><path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l12-3v3M17 13.5h.01"/></svg></div><div><div class="tt">Finanzen</div><div class="ts" id="tFin"></div></div></a>
+<a class="tile" data-k="einkauf" href="#einkauf"><div class="icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6"/></svg></div><div><div class="tt">Einkauf</div><div class="ts" id="tShop"></div></div></a>
+<a class="tile" data-k="kalender" href="#kalender"><div class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div><div><div class="tt">Kalender</div><div class="ts" id="tCal"></div></div></a>
 <a class="tile" href="#kalorien"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3c1 4 6 6 6 11a6 6 0 0 1-12 0c0-2 1-3 2-4 0 2 1 3 2 3 0-4 1-7 2-10z"/></svg></div><div><div class="tt">Kalorien</div><div class="ts" id="tKal"></div></div></a>
-<a class="tile" href="#spiele"><div class="icon"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="5"/><path d="M7 12h4M9 10v4M15 13h.01M17 11h.01"/></svg></div><div><div class="tt">Spiele</div><div class="ts" id="tGame"></div></div></a>
-<a class="tile" href="#quran"><div class="icon"><svg viewBox="0 0 24 24"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/></svg></div><div><div class="tt">Quran</div><div class="ts" id="tQur"></div></div></a>
+<a class="tile" data-k="spiele" href="#spiele"><div class="icon"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="5"/><path d="M7 12h4M9 10v4M15 13h.01M17 11h.01"/></svg></div><div><div class="tt">Spiele</div><div class="ts" id="tGame"></div></div></a>
+<a class="tile" data-k="quran" href="#quran"><div class="icon"><svg viewBox="0 0 24 24"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/></svg></div><div><div class="tt">Quran</div><div class="ts" id="tQur"></div></div></a>
 </div>
 </section>
 
@@ -258,6 +265,14 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area
 <section class="view" id="v-einstellungen">
 <header><h1>Einstellungen</h1></header>
 <div class="card"><div class="lbl">Design</div><div class="th" id="thm"></div></div>
+<div class="card hid" id="customBlock"><div class="lbl">Eigene Farben</div>
+<div class="crow"><span>Hintergrund</span><input type="color" id="cBg"></div>
+<div class="crow"><span>Karten</span><input type="color" id="cCard"></div>
+<div class="crow"><span>Text</span><input type="color" id="cText"></div>
+<div class="crow"><span>Akzent 1 (Verlauf)</span><input type="color" id="cA"></div>
+<div class="crow"><span>Akzent 2 (Verlauf)</span><input type="color" id="cB"></div>
+<button class="btn s" id="cReset" style="margin-top:12px">Zurücksetzen</button></div>
+<div class="card"><div class="lbl">Menü unten</div><div id="navList"></div><div class="hint" id="navHint"></div></div>
 <div class="card"><div class="f"><label for="stWho">Ich bin</label><select id="stWho"><option value="">– wählen –</option><option>Mert</option><option>Janne</option></select></div>
 <div class="f"><label for="stGoal">Kalorienziel pro Tag (kcal)</label><input id="stGoal" type="number" inputmode="numeric" min="1" max="10000"></div>
 <button class="btn" id="stSave">Speichern</button><div class="hint">Das Ziel legst du selbst fest. Bei Fragen zu einem passenden Wert hilft eine Ärztin, ein Arzt oder eine Ernährungsberatung.</div></div>
@@ -272,7 +287,7 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area
 <div class="f" style="margin-top:10px"><textarea id="bkText" placeholder="Backup-Text hier erzeugen oder einfügen" style="min-height:90px"></textarea></div>
 <div class="r2"><button class="btn s" id="bkMake">Text erzeugen</button><button class="btn s" id="bkRestore">Aus Text laden</button></div></details></div>
 <div class="card"><div class="lbl">Version</div>
-<div class="hint" style="margin-top:0" id="verApp">App: v2026-11-15-1</div>
+<div class="hint" style="margin-top:0" id="verApp">App: v2026-11-15-2</div>
 <div class="hint" id="verWorker">KI-Worker: wird geprüft …</div></div>
 </section>
 
@@ -319,8 +334,11 @@ const run=async(f,err)=>{try{await f()}catch(e){toast(err||"Aktion fehlgeschlage
 
 /* ---------- Routing ---------- */
 const VIEWS=["start","finanzen","einkauf","kalender","kalorien","spiele","quran","einstellungen"];
-const NAVKEY=h=>["kalender","kalorien","einstellungen"].includes(h)?h:"start";
-let prefs={theme:D.dataset.theme||"light",start:"finanzen",goal:0,...lsGet("sa.prefs",{})};
+const OPT=["finanzen","einkauf","kalender","kalorien","spiele","quran"],DEFNAV=["kalender","kalorien"];
+const navOpt=()=>{const n=(typeof prefs!=="undefined"&&prefs.nav||[]).filter(k=>OPT.includes(k));return n.length>=1&&n.length<=4?n:DEFNAV};
+const navKeys=()=>["start",...OPT.filter(k=>navOpt().includes(k)),"einstellungen"];
+const NAVKEY=h=>navKeys().includes(h)?h:"start";
+let prefs={theme:D.dataset.theme||"dark",start:"finanzen",goal:0,...lsGet("sa.prefs",{})};
 function renderLive(){try{const el=$("live");if(cur==="einstellungen"){el.textContent="";return}
 let t="Kein Sync · nur dieses Gerät",ok=false;
 if(cur==="kalorien"){if(me){t="Privat gespeichert · nur du siehst das";ok=true}else t="Nur auf diesem Gerät gespeichert"}
@@ -338,13 +356,24 @@ addEventListener("keydown",e=>{if(e.key==="Escape"){if($("ask").classList.contai
 function route(){let h=location.hash.slice(1);if(!VIEWS.includes(h))h="start";cur=h;closeSheet();$("fab").classList.toggle("hid",!SHEETS[h]);renderLive();
 VIEWS.forEach(v=>{$("v-"+v).classList.toggle("on",v===h)});
 document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.v===NAVKEY(h)));scrollTo(0,0);
+try{renderBadges()}catch(e){}
 if(h==="quran"){try{loadSura()}catch(e){}}}
 addEventListener("hashchange",route);
 
 /* ---------- Design ---------- */
-const THEMES=[["light","Hell","#ffffff"],["dark","Dunkel","#1a1a1a"],["pink","Pink","#d88bdb"]];
-function applyTheme(){D.dataset.theme=prefs.theme;try{localStorage.setItem("sa.theme",prefs.theme)}catch(e){}
-const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=getComputedStyle(D).getPropertyValue("--bg").trim()||"#f5f5f7"}
+const THEMES=[["dark","Dunkel","#1a1a1a"],["pink","Pink","#d88bdb"],["custom","Individuell","linear-gradient(135deg,#974ecf,#594ecf)"]];
+const CUSTOM0={bg:"#14121f",card:"#1f1b2e",text:"#f2f2f7",a:"#974ecf",b:"#594ecf"};
+const CIDS={cBg:"bg",cCard:"card",cText:"text",cA:"a",cB:"b"};
+const lum=h=>{const n=parseInt(h.slice(1),16);return(0.299*((n>>16)&255)+0.587*((n>>8)&255)+0.114*(n&255))/255};
+function applyTheme(){if(!["dark","pink","custom"].includes(prefs.theme))prefs.theme="dark";
+D.dataset.theme=prefs.theme;try{localStorage.setItem("sa.theme",prefs.theme)}catch(e){}
+const st=D.style;["--bg","--card","--text","--muted","--line","--accent","--brand-a","--brand-b","--ok","--out"].forEach(p=>st.removeProperty(p));st.colorScheme="";
+if(prefs.theme==="custom"){const c={...CUSTOM0,...(prefs.custom||{})},dark=lum(c.bg)<0.5;
+st.setProperty("--bg",c.bg);st.setProperty("--card",c.card);st.setProperty("--text",c.text);
+st.setProperty("--muted","color-mix(in srgb,"+c.text+" 55%,"+c.bg+")");st.setProperty("--line","color-mix(in srgb,"+c.text+" 14%,"+c.card+")");
+st.setProperty("--accent",c.a);st.setProperty("--brand-a",c.a);st.setProperty("--brand-b",c.b);
+st.setProperty("--ok",dark?"#30d158":"#248a3d");st.setProperty("--out",dark?"#ff6b6b":"#d70015");st.colorScheme=dark?"dark":"light"}
+const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=getComputedStyle(D).getPropertyValue("--bg").trim()||"#0d0d0e"}
 applyTheme();route();
 
 /* ---------- Verbindung (Firebase) ---------- */
@@ -406,7 +435,7 @@ const sel=$("fCat"),pv=sel.value;sel.innerHTML=opts(tags[fType]);if(tags[fType].
 $("fPrev").onclick=()=>{fm.setMonth(fm.getMonth()-1);renderFin()};$("fNext").onclick=()=>{fm.setMonth(fm.getMonth()+1);renderFin()};
 $("fType").onclick=e=>{const t=e.target.dataset.t;if(!t)return;fType=t;[...$("fType").children].forEach(b=>b.classList.toggle("on",b===e.target));renderFin()};
 $("fForm").onsubmit=e=>{e.preventDefault();const a=Math.round(parseFloat($("fAmt").value)*100)/100;if(!(a>0))return toast("Bitte einen Betrag eingeben");
-const o={type:fType,amount:a,tag:$("fCat").value,date:$("fDate").value,who:$("fWhoS").value,note:$("fNote").value.trim(),createdAt:Date.now()};
+const o={type:fType,amount:a,tag:$("fCat").value,date:$("fDate").value,who:$("fWhoS").value,note:$("fNote").value.trim(),createdAt:Date.now(),by:prefs.who||""};
 run(async()=>{await fin.add(o);$("fAmt").value="";$("fNote").value="";fm=new Date(o.date+"T12:00:00");fm.setDate(1);renderFin();closeSheet();toast("Gespeichert")},"Speichern fehlgeschlagen")};
 $("fList").onclick=e=>{const id=e.target.dataset.del;if(id)ask("Diesen Eintrag löschen?").then(ok=>ok&&run(()=>fin.del(id)))};
 document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{const k=b.dataset.add,inp=$(k==="out"?"tOut":"tIn"),v=inp.value.trim();if(!v)return;
@@ -418,9 +447,9 @@ const shop=store("items",renderShop);
 function renderShop(){const L=shop.get().slice().sort((a,b)=>(a.done-b.done)||(a.createdAt-b.createdAt));
 $("sList").innerHTML=L.length?L.map(i=>`<div class="ln ${i.done?"done":""}" data-id="${esc(i.id)}" style="cursor:pointer"><div class="chk">${i.done?"✓":""}</div><div class="t nm">${esc(i.name)}</div><button class="x" data-del="${esc(i.id)}" aria-label="Löschen">✕</button></div>`).join(""):EMPTY("Die Liste ist leer");
 const open=L.filter(i=>!i.done).length;$("sCount").textContent=open+" offen";$("sClear").disabled=open===L.length}
-$("sForm").onsubmit=e=>{e.preventDefault();const n=$("sIn").value.trim();if(!n)return;$("sIn").value="";run(()=>shop.add({name:n,done:false,createdAt:Date.now()}))};
+$("sForm").onsubmit=e=>{e.preventDefault();const n=$("sIn").value.trim();if(!n)return;$("sIn").value="";run(()=>shop.add({name:n,done:false,createdAt:Date.now(),by:prefs.who||""}))};
 $("sList").onclick=e=>{const d=e.target.closest("[data-del]");if(d)return run(()=>shop.del(d.dataset.del));
-const r=e.target.closest("[data-id]");if(r){const it=shop.get().find(x=>x.id===r.dataset.id);if(it)run(()=>shop.set(it.id,{done:!it.done}))}};
+const r=e.target.closest("[data-id]");if(r){const it=shop.get().find(x=>x.id===r.dataset.id);if(it)run(()=>shop.set(it.id,{done:!it.done,at:Date.now(),lastBy:prefs.who||""}))}};
 $("sClear").onclick=()=>run(async()=>{for(const i of shop.get().filter(x=>x.done))await shop.del(i.id);toast("Erledigte entfernt")});
 
 /* ---------- Kalender ---------- */
@@ -438,7 +467,7 @@ const[y,m,d]=cs.split("-").map(Number);$("cDayT").textContent=WD[new Date(y,m-1,
 const L=evOn(cs);$("cDay").innerHTML=L.length?L.map(e=>`<div class="ev"><div class="b" style="background:${esc(e.color)}"></div><div class="t"><div>${esc(e.title)}</div><small style="color:var(--muted);font-size:13px">${e.time?esc(e.time)+" Uhr · ":""}${esc(e.who)}</small>${e.note?`<div class="note">${esc(e.note)}</div>`:""}</div><button class="x" data-del="${esc(e.id)}" aria-label="Löschen">✕</button></div>`).join(""):EMPTY("Keine Termine an diesem Tag")}
 $("cPrev").onclick=()=>{cm.setMonth(cm.getMonth()-1);renderCal()};$("cNext").onclick=()=>{cm.setMonth(cm.getMonth()+1);renderCal()};
 $("cGrid").onclick=e=>{const b=e.target.closest("[data-d]");if(!b)return;cs=b.dataset.d;$("cDate").value=cs;renderCal()};
-$("cForm").onsubmit=e=>{e.preventDefault();const o={title:$("cTitle").value.trim(),note:$("cNote").value.trim(),date:$("cDate").value,time:$("cTime").value||"",who:$("cWho").value,color:document.querySelector('input[name="cc"]:checked').value,createdAt:Date.now()};
+$("cForm").onsubmit=e=>{e.preventDefault();const o={title:$("cTitle").value.trim(),note:$("cNote").value.trim(),date:$("cDate").value,time:$("cTime").value||"",who:$("cWho").value,color:document.querySelector('input[name="cc"]:checked').value,createdAt:Date.now(),by:prefs.who||""};
 if(!o.title||!o.date)return;run(async()=>{await cal.add(o);$("cTitle").value="";$("cNote").value="";$("cTime").value="";cs=o.date;const[y,m]=o.date.split("-").map(Number);cm=new Date(y,m-1,1);renderCal();closeSheet();toast("Termin gespeichert")},"Speichern fehlgeschlagen")};
 $("cDay").onclick=e=>{const id=e.target.dataset.del;if(id)ask("Diesen Termin löschen?").then(ok=>ok&&run(()=>cal.del(id)))};
 
@@ -513,9 +542,9 @@ if(me)me.onSnapshot(s=>{days={};s.docs.forEach(d=>{if(!d.exists)return;const v=d
 /* ---------- Einstellungen ---------- */
 $("thm").innerHTML=THEMES.map(t=>`<button data-th="${t[0]}"><i style="background:${t[2]}"></i>${t[1]}</button>`).join("");
 async function savePrefs(p){prefs={...prefs,...p};lsSet("sa.prefs",prefs);applyTheme();renderSet();renderKal();if(me)await me.doc("prefs").set(prefs)}
-function renderSet(){renderLive();document.querySelectorAll("#thm button").forEach(b=>b.classList.toggle("on",b.dataset.th===prefs.theme));
+function renderSet(){renderLive();renderNav();renderNavList();syncCustom();document.querySelectorAll("#thm button").forEach(b=>b.classList.toggle("on",b.dataset.th===prefs.theme));
 if(document.activeElement!==$("stGoal"))$("stGoal").value=prefs.goal||"";$("stWho").value=prefs.who||"";applyWho();
-$("stInfo").textContent=(live?"Live verbunden. ":"Nur auf diesem Gerät gespeichert. ")+"Finanzen, Einkauf und Kalender werden mit allen geteilt, die sich mit einer freigeschalteten E-Mail anmelden. Kalorien, Design und Startseite sind privat."}
+$("stInfo").textContent=(live?"Live verbunden. ":"Nur auf diesem Gerät gespeichert. ")+"Finanzen, Einkauf und Kalender werden mit allen geteilt, die sich mit einer freigeschalteten E-Mail anmelden. Kalorien, Design und Menü sind privat."}
 $("thm").onclick=e=>{const b=e.target.closest("[data-th]");if(b)run(()=>savePrefs({theme:b.dataset.th}))};
 $("stSave").onclick=()=>{const g=Math.round(parseFloat($("stGoal").value)||0);if(g<0||g>10000)return toast("Bitte einen gültigen Wert eingeben");
 run(async()=>{await savePrefs({goal:g,who:$("stWho").value});toast("Gespeichert")},"Speichern fehlgeschlagen")};
@@ -543,8 +572,8 @@ if(!mine)return toast("Wähle zuerst unter „Mehr“, wer du bist");
 if(ttt.winner)return;if(ttt.turn!==mine)return toast((ttt.turn==="X"?ttt.x:ttt.o)+" ist dran");if(ttt.board[i]!=="-")return;
 const nb=ttt.board.slice(0,i)+mine+ttt.board.slice(i+1),w=winnerOf(nb),sc={...ttt.score};
 if(w==="X")sc[ttt.x]=(sc[ttt.x]||0)+1;else if(w==="O")sc[ttt.o]=(sc[ttt.o]||0)+1;else if(w==="draw")sc.draw=(sc.draw||0)+1;
-run(()=>tttDoc.set({...ttt,board:nb,turn:mine==="X"?"O":"X",winner:w,score:sc}),"Zug fehlgeschlagen")};
-$("tttNew").onclick=()=>{const st=ttt.starter==="X"?"O":"X";run(()=>tttDoc.set({...ttt,board:"---------",turn:st,starter:st,winner:""}),"Neues Spiel fehlgeschlagen")};
+run(()=>tttDoc.set({...ttt,board:nb,turn:mine==="X"?"O":"X",winner:w,score:sc,by:prefs.who,at:Date.now()}),"Zug fehlgeschlagen")};
+$("tttNew").onclick=()=>{const st=ttt.starter==="X"?"O":"X";run(()=>tttDoc.set({...ttt,board:"---------",turn:st,starter:st,winner:"",by:prefs.who||"",at:Date.now()}),"Neues Spiel fehlgeschlagen")};
 
 /* ---------- Quran: Sure des Tages ---------- */
 const SURAS="Al-Fatiha,Al-Baqara,Al Imran,An-Nisa,Al-Ma'ida,Al-An'am,Al-A'raf,Al-Anfal,At-Tauba,Yunus,Hud,Yusuf,Ar-Ra'd,Ibrahim,Al-Hidschr,An-Nahl,Al-Isra,Al-Kahf,Maryam,Ta-Ha,Al-Anbiya,Al-Hadsch,Al-Mu'minun,An-Nur,Al-Furqan,Asch-Schu'ara,An-Naml,Al-Qasas,Al-Ankabut,Ar-Rum,Luqman,As-Sadschda,Al-Ahzab,Saba,Fatir,Ya-Sin,As-Saffat,Sad,Az-Zumar,Ghafir,Fussilat,Asch-Schura,Az-Zukhruf,Ad-Dukhan,Al-Dschathiya,Al-Ahqaf,Muhammad,Al-Fath,Al-Hudschurat,Qaf,Adh-Dhariyat,At-Tur,An-Nadschm,Al-Qamar,Ar-Rahman,Al-Waqi'a,Al-Hadid,Al-Mudschadala,Al-Haschr,Al-Mumtahana,As-Saff,Al-Dschumu'a,Al-Munafiqun,At-Taghabun,At-Talaq,At-Tahrim,Al-Mulk,Al-Qalam,Al-Haqqa,Al-Ma'aridsch,Nuh,Al-Dschinn,Al-Muzzammil,Al-Muddaththir,Al-Qiyama,Al-Insan,Al-Mursalat,An-Naba,An-Nazi'at,Abasa,At-Takwir,Al-Infitar,Al-Mutaffifin,Al-Inschiqaq,Al-Burudsch,At-Tariq,Al-A'la,Al-Ghaschiya,Al-Fadschr,Al-Balad,Asch-Schams,Al-Layl,Ad-Duha,Asch-Scharh,At-Tin,Al-Alaq,Al-Qadr,Al-Bayyina,Az-Zalzala,Al-Adiyat,Al-Qari'a,At-Takathur,Al-Asr,Al-Humaza,Al-Fil,Quraisch,Al-Ma'un,Al-Kauthar,Al-Kafirun,An-Nasr,Al-Masad,Al-Ikhlas,Al-Falaq,An-Nas".split(",");
@@ -586,8 +615,49 @@ const sum=(days[key]||[]).reduce((a,e)=>a+e.kcal,0);$("tKal").textContent=prefs.
 $("tGame").textContent=tttStatus();
 const n=suraOf(key),rd=(quran.get().find(x=>x.id===key)||{read:{}}).read||{};
 const who=PEOPLE.map(p=>p+(rd[p]?" ✓":"")).join(" · ");
-$("hSura").textContent=`Sure ${n} · ${SURAS[n-1]}`;$("hSuraSub").textContent=who;$("tQur").textContent=PEOPLE.every(p=>rd[p])?"Beide gelesen":PEOPLE.some(p=>rd[p])?"Eine:r hat gelesen":"Noch offen"}catch(e){}}
+$("hSura").textContent=`Sure ${n} · ${SURAS[n-1]}`;$("hSuraSub").textContent=who;$("tQur").textContent=PEOPLE.every(p=>rd[p])?"Beide gelesen":PEOPLE.some(p=>rd[p])?"Eine:r hat gelesen":"Noch offen";renderBadges()}catch(e){}}
 $("whoPick").onclick=e=>{const w=e.target.dataset.w;if(w)run(()=>savePrefs({who:w}))};
+
+/* ---------- Untere Leiste (anpassbar) ---------- */
+const NAVI={start:["Start",'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>'],finanzen:["Finanzen",'<svg viewBox="0 0 24 24"><path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l12-3v3M17 13.5h.01"/></svg>'],einkauf:["Einkauf",'<svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6"/></svg>'],kalender:["Kalender",'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>'],kalorien:["Kalorien",'<svg viewBox="0 0 24 24"><path d="M12 3c1 4 6 6 6 11a6 6 0 0 1-12 0c0-2 1-3 2-4 0 2 1 3 2 3 0-4 1-7 2-10z"/></svg>'],spiele:["Spiele",'<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="5"/><path d="M7 12h4M9 10v4M15 13h.01M17 11h.01"/></svg>'],quran:["Quran",'<svg viewBox="0 0 24 24"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/></svg>'],einstellungen:["Mehr",'<svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>']};
+function renderNav(){try{const act=NAVKEY(cur);
+$("nav").innerHTML=navKeys().map(k=>`<a href="#${k}" data-v="${k}" class="${k===act?"on":""}">${NAVI[k][1]}${NAVI[k][0]}</a>`).join("");renderBadges()}catch(e){}}
+function renderNavList(){try{const on=navOpt();
+const row=(k,fixed)=>`<div class="ln ${fixed||on.includes(k)?"done":""}" ${fixed?'style="opacity:.6"':`data-k="${k}" style="cursor:pointer"`}><div class="chk">${fixed||on.includes(k)?"✓":""}</div><div class="t">${NAVI[k][0]}${fixed?" (fest)":""}</div></div>`;
+$("navList").innerHTML=row("start",true)+OPT.map(k=>row(k,false)).join("")+row("einstellungen",true);
+$("navHint").textContent=`Unten: ${on.length+2} Felder (mindestens 3, höchstens 6). Start und Mehr sind immer dabei.`}catch(e){}}
+$("navList").onclick=e=>{const r=e.target.closest("[data-k]");if(!r)return;const k=r.dataset.k,sel=navOpt();
+if(sel.includes(k)){if(sel.length<=1)return toast("Mindestens 3 Felder unten nötig");run(()=>savePrefs({nav:sel.filter(x=>x!==k)}))}
+else{if(sel.length>=4)return toast("Höchstens 6 Felder unten möglich");run(()=>savePrefs({nav:[...sel,k]}))}};
+
+/* ---------- Individuelle Farben ---------- */
+function syncCustom(){try{const c={...CUSTOM0,...(prefs.custom||{})};
+Object.entries(CIDS).forEach(([id,k])=>{if(document.activeElement!==$(id))$(id).value=c[k]});
+$("customBlock").classList.toggle("hid",prefs.theme!=="custom")}catch(e){}}
+Object.entries(CIDS).forEach(([id,k])=>{const el=$(id);
+el.addEventListener("input",()=>{prefs.custom={...CUSTOM0,...(prefs.custom||{}),[k]:el.value};applyTheme()});
+el.addEventListener("change",()=>run(()=>savePrefs({custom:prefs.custom})))});
+$("cReset").onclick=()=>run(()=>savePrefs({custom:{...CUSTOM0}}));
+
+/* ---------- Hinweispunkte (rot) ---------- */
+const AREAS=["finanzen","einkauf","kalender","spiele","quran"];
+let seen=lsGet("sa.seen",null);
+if(!seen){seen={};const t0=Date.now();AREAS.forEach(k=>seen[k]=t0);lsSet("sa.seen",seen)}
+const other=a=>!!(a&&prefs.who&&a!==prefs.who);
+const startOfDay=()=>{const d=new Date();d.setHours(0,0,0,0);return d.getTime()};
+function badgeMap(){const m={};
+m.finanzen=fin.get().some(e=>other(e.by)&&(e.createdAt||0)>seen.finanzen);
+m.einkauf=shop.get().some(i=>{const t=Math.max(i.createdAt||0,i.at||0),w=(i.at||0)>=(i.createdAt||0)?(i.lastBy||i.by):i.by;return other(w)&&t>seen.einkauf});
+m.kalender=cal.get().some(e=>other(e.by)&&(e.createdAt||0)>seen.kalender);
+m.spiele=other(ttt.by)&&(ttt.at||0)>seen.spiele;
+const rd=(quran.get().find(x=>x.id===dayKey())||{read:{}}).read||{};
+m.quran=PEOPLE.some(p=>p!==prefs.who&&(rd[p]||0)>seen.quran)||seen.quran<startOfDay();
+return m}
+function renderBadges(){try{
+if(AREAS.includes(cur)){seen[cur]=Date.now();lsSet("sa.seen",seen)}
+const m=badgeMap(),keys=navKeys();
+document.querySelectorAll(".tile[data-k]").forEach(t=>t.classList.toggle("has",!!m[t.dataset.k]));
+document.querySelectorAll("#nav a").forEach(a=>{const k=a.dataset.v;let has=!!m[k];if(k==="start")has=Object.keys(m).some(x=>m[x]&&!keys.includes(x));a.classList.toggle("has",has)})}catch(e){}}
 
 /* ---------- Backup ---------- */
 const bkText=()=>JSON.stringify({app:"alltag",version:1,exported:new Date().toISOString(),entries:fin.get(),items:shop.get(),events:cal.get(),tags,days,prefs},null,1);
