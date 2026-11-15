@@ -142,6 +142,7 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area
 .ttt button.x{color:var(--accent)}
 .ttt button:active{transform:scale(.96)}
 .v-ar{font-size:26px;line-height:2;text-align:right;direction:rtl;font-family:"Geeza Pro","Traditional Arabic",serif}
+.v-tr{font-size:15px;font-style:italic;line-height:1.5;margin:0 0 6px;opacity:.9}
 .v-de{font-size:15px;line-height:1.5;color:var(--muted);margin:2px 0 14px}
 .v-nr{display:inline-block;font-size:12px;color:var(--accent);font-weight:600;margin-right:6px}
 
@@ -273,6 +274,7 @@ nav a.has::after{content:"";position:absolute;top:1px;left:calc(50% + 8px);width
 <div class="crow"><span>Akzent 2 (Verlauf)</span><input type="color" id="cB"></div>
 <button class="btn s" id="cReset" style="margin-top:12px">Zurücksetzen</button></div>
 <div class="card"><div class="lbl">Menü unten</div><div id="navList"></div><div class="hint" id="navHint"></div></div>
+<div class="card"><div class="lbl">Hinweispunkte</div><div class="hint" id="dotInfo" style="margin-top:0"></div><button class="btn s" id="dotTest" style="margin-top:10px">Punkte testen</button></div>
 <div class="card"><div class="f"><label for="stWho">Ich bin</label><select id="stWho"><option value="">– wählen –</option><option>Mert</option><option>Janne</option></select></div>
 <div class="f"><label for="stGoal">Kalorienziel pro Tag (kcal)</label><input id="stGoal" type="number" inputmode="numeric" min="1" max="10000"></div>
 <button class="btn" id="stSave">Speichern</button><div class="hint">Das Ziel legst du selbst fest. Bei Fragen zu einem passenden Wert hilft eine Ärztin, ein Arzt oder eine Ernährungsberatung.</div></div>
@@ -287,7 +289,7 @@ nav a.has::after{content:"";position:absolute;top:1px;left:calc(50% + 8px);width
 <div class="f" style="margin-top:10px"><textarea id="bkText" placeholder="Backup-Text hier erzeugen oder einfügen" style="min-height:90px"></textarea></div>
 <div class="r2"><button class="btn s" id="bkMake">Text erzeugen</button><button class="btn s" id="bkRestore">Aus Text laden</button></div></details></div>
 <div class="card"><div class="lbl">Version</div>
-<div class="hint" style="margin-top:0" id="verApp">App: v2026-11-15-2</div>
+<div class="hint" style="margin-top:0" id="verApp">App: v2026-11-15-3</div>
 <div class="hint" id="verWorker">KI-Worker: wird geprüft …</div></div>
 </section>
 
@@ -542,7 +544,7 @@ if(me)me.onSnapshot(s=>{days={};s.docs.forEach(d=>{if(!d.exists)return;const v=d
 /* ---------- Einstellungen ---------- */
 $("thm").innerHTML=THEMES.map(t=>`<button data-th="${t[0]}"><i style="background:${t[2]}"></i>${t[1]}</button>`).join("");
 async function savePrefs(p){prefs={...prefs,...p};lsSet("sa.prefs",prefs);applyTheme();renderSet();renderKal();if(me)await me.doc("prefs").set(prefs)}
-function renderSet(){renderLive();renderNav();renderNavList();syncCustom();document.querySelectorAll("#thm button").forEach(b=>b.classList.toggle("on",b.dataset.th===prefs.theme));
+function renderSet(){renderLive();renderNav();renderNavList();syncCustom();renderDotInfo();document.querySelectorAll("#thm button").forEach(b=>b.classList.toggle("on",b.dataset.th===prefs.theme));
 if(document.activeElement!==$("stGoal"))$("stGoal").value=prefs.goal||"";$("stWho").value=prefs.who||"";applyWho();
 $("stInfo").textContent=(live?"Live verbunden. ":"Nur auf diesem Gerät gespeichert. ")+"Finanzen, Einkauf und Kalender werden mit allen geteilt, die sich mit einer freigeschalteten E-Mail anmelden. Kalorien, Design und Menü sind privat."}
 $("thm").onclick=e=>{const b=e.target.closest("[data-th]");if(b)run(()=>savePrefs({theme:b.dataset.th}))};
@@ -591,13 +593,18 @@ const done=!!(prefs.who&&rd[prefs.who]);$("qBtn").textContent=done?"Gelesen – 
 $("qBtn").onclick=()=>{if(!prefs.who)return;const cur=qToday(),rd={...(cur.read||{})};
 if(rd[prefs.who])delete rd[prefs.who];else rd[prefs.who]=Date.now();
 run(()=>quran.put(dayKey(),{read:rd}),"Speichern fehlgeschlagen")};
-function showSura(n,d){const ar=d[0].ayahs,de=d[1]?d[1].ayahs:[];
-$("qText").innerHTML=ar.map((a,i)=>`<div class="v-ar">${esc(a.text)}</div><div class="v-de"><span class="v-nr">${a.numberInSurah}</span>${esc((de[i]&&de[i].text)||"")}</div>`).join("")}
+let trId=null;
+const edOf=(d,id)=>d.find(x=>x.edition&&x.edition.identifier===id)||null;
+function showSura(n,d){const ar=(edOf(d,"quran-uthmani")||d[0]).ayahs,de=(edOf(d,"de.bubenheim")||d[d.length-1]).ayahs,t=trId&&edOf(d,trId),tr=t?t.ayahs:null;
+$("qText").innerHTML=ar.map((a,i)=>`<div class="v-ar">${esc(a.text)}</div>${tr?`<div class="v-tr">${esc((tr[i]&&tr[i].text)||"")}</div>`:""}<div class="v-de"><span class="v-nr">${a.numberInSurah}</span>${esc((de[i]&&de[i].text)||"")}</div>`).join("")}
+async function fetchEd(n,eds){const r=await fetch(`https://api.alquran.cloud/v1/surah/${n}/editions/${eds.join(",")}`);const j=await r.json();if(!j.data||!j.data[0])throw new Error("leer");return j.data}
+async function findTrId(){if(trId)return trId;try{const r=await fetch("https://api.alquran.cloud/v1/edition/type/transliteration");const j=await r.json();const L=j.data||[];const e=L.find(x=>x.language==="en")||L[0];trId=(e&&e.identifier)||"en.transliteration"}catch(e){trId="en.transliteration"}return trId}
 async function loadSura(){const n=suraOf(dayKey());if(loadedSura===n)return;loadedSura=n;
 if(suraCache[n])return showSura(n,suraCache[n]);
 $("qText").innerHTML=EMPTY("Lade Text …");
-try{const r=await fetch(`https://api.alquran.cloud/v1/surah/${n}/editions/quran-uthmani,de.bubenheim`);const j=await r.json();
-if(!j.data||!j.data[0])throw new Error("leer");suraCache[n]=j.data;showSura(n,j.data)}
+try{const id=await findTrId();let data;
+try{data=await fetchEd(n,["quran-uthmani",id,"de.bubenheim"])}catch(e){trId=null;data=await fetchEd(n,["quran-uthmani","de.bubenheim"])}
+suraCache[n]=data;showSura(n,data)}
 catch(e){loadedSura=0;$("qText").innerHTML=`<div class="empty">Text konnte nicht geladen werden.</div><a class="btn s" style="display:block;text-align:center;text-decoration:none" href="https://quran.com/${n}" target="_blank" rel="noopener">Auf quran.com lesen</a>`}}
 
 /* ---------- Startseite ---------- */
@@ -640,10 +647,11 @@ el.addEventListener("change",()=>run(()=>savePrefs({custom:prefs.custom})))});
 $("cReset").onclick=()=>run(()=>savePrefs({custom:{...CUSTOM0}}));
 
 /* ---------- Hinweispunkte (rot) ---------- */
+let fakeDots=false;
 const AREAS=["finanzen","einkauf","kalender","spiele","quran"];
 let seen=lsGet("sa.seen",null);
 if(!seen){seen={};const t0=Date.now();AREAS.forEach(k=>seen[k]=t0);lsSet("sa.seen",seen)}
-const other=a=>!!(a&&prefs.who&&a!==prefs.who);
+const other=a=>!!(prefs.who&&a!==prefs.who);
 const startOfDay=()=>{const d=new Date();d.setHours(0,0,0,0);return d.getTime()};
 function badgeMap(){const m={};
 m.finanzen=fin.get().some(e=>other(e.by)&&(e.createdAt||0)>seen.finanzen);
@@ -654,10 +662,14 @@ const rd=(quran.get().find(x=>x.id===dayKey())||{read:{}}).read||{};
 m.quran=PEOPLE.some(p=>p!==prefs.who&&(rd[p]||0)>seen.quran)||seen.quran<startOfDay();
 return m}
 function renderBadges(){try{
-if(AREAS.includes(cur)){seen[cur]=Date.now();lsSet("sa.seen",seen)}
-const m=badgeMap(),keys=navKeys();
+if(!fakeDots&&AREAS.includes(cur)){seen[cur]=Date.now();lsSet("sa.seen",seen)}
+const m=fakeDots?Object.fromEntries(AREAS.map(k=>[k,true])):badgeMap(),keys=navKeys();
 document.querySelectorAll(".tile[data-k]").forEach(t=>t.classList.toggle("has",!!m[t.dataset.k]));
 document.querySelectorAll("#nav a").forEach(a=>{const k=a.dataset.v;let has=!!m[k];if(k==="start")has=Object.keys(m).some(x=>m[x]&&!keys.includes(x));a.classList.toggle("has",has)})}catch(e){}}
+
+function renderDotInfo(){try{const o=PEOPLE.find(p=>p!==prefs.who)||"die andere Person";
+$("dotInfo").textContent=prefs.who?`Du bist ${prefs.who}. Rote Punkte erscheinen, wenn ${o} etwas Neues macht (Zug, Einkauf, Eintrag, Termin, Sure gelesen). Allein kannst du sie nur mit dem Test sehen.`:"Wähle oben bei „Ich bin“ deinen Namen, sonst gibt es keine Punkte."}catch(e){}}
+$("dotTest").onclick=()=>{fakeDots=true;renderBadges();toast("Test: Punkte 8 Sekunden sichtbar");setTimeout(()=>{fakeDots=false;renderBadges()},8000)};
 
 /* ---------- Backup ---------- */
 const bkText=()=>JSON.stringify({app:"alltag",version:1,exported:new Date().toISOString(),entries:fin.get(),items:shop.get(),events:cal.get(),tags,days,prefs},null,1);
