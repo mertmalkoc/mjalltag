@@ -153,6 +153,9 @@ nav a{position:relative;min-width:0}
 nav a.has::after{content:"";position:absolute;top:1px;left:calc(50% + 8px);width:9px;height:9px;border-radius:50%;background:#ff3b30;box-shadow:0 0 0 2px var(--card)}
 .crow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
 .crow input[type=color]{width:52px;height:34px;padding:2px;border-radius:10px;flex:none;cursor:pointer}
+/* ===== v4 ===== */
+.toast{white-space:normal;max-width:86vw;text-align:center}
+#kMode button{font-size:13px;padding:9px 2px}
 </style>
 </head>
 <body>
@@ -172,6 +175,7 @@ nav a.has::after{content:"";position:absolute;top:1px;left:calc(50% + 8px);width
 <a class="tile" href="#kalorien"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3c1 4 6 6 6 11a6 6 0 0 1-12 0c0-2 1-3 2-4 0 2 1 3 2 3 0-4 1-7 2-10z"/></svg></div><div><div class="tt">Kalorien</div><div class="ts" id="tKal"></div></div></a>
 <a class="tile" data-k="spiele" href="#spiele"><div class="icon"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="5"/><path d="M7 12h4M9 10v4M15 13h.01M17 11h.01"/></svg></div><div><div class="tt">Spiele</div><div class="ts" id="tGame"></div></div></a>
 <a class="tile" data-k="quran" href="#quran"><div class="icon"><svg viewBox="0 0 24 24"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/></svg></div><div><div class="tt">Quran</div><div class="ts" id="tQur"></div></div></a>
+<a class="tile" href="#passwoerter"><div class="icon"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div><div><div class="tt">Passwörter</div><div class="ts">Geschützt</div></div></a>
 </div>
 </section>
 
@@ -223,7 +227,7 @@ nav a.has::after{content:"";position:absolute;top:1px;left:calc(50% + 8px);width
 <div class="card"><div class="lbl">Gegessen</div><div class="big"><span id="kEat">0</span> <small id="kOf"></small></div><div class="bar" id="kBar"><span style="width:0"></span></div>
 <div class="g2"><div><div class="lbl">Ziel</div><div class="v" id="kGoal"></div></div><div><div class="lbl" id="kLeftL">Noch frei</div><div class="v" id="kLeft"></div></div></div></div>
 <div class="sheet" id="sh-kal"><div class="sh-h"><b>Eintrag hinzufügen</b><button class="x" data-close aria-label="Schließen">✕</button></div>
-<div class="seg" id="kMode"><button class="on" data-m="est">Schreiben</button><button data-m="man">Pro 100 g/ml</button><button data-m="dir">Direkt</button></div>
+<div class="seg" id="kMode"><button class="on" data-m="est">Schreiben</button><button data-m="man">100 g/ml</button><button data-m="dir">Direkt</button><button data-m="fav">Favoriten</button></div>
 <div id="k-est"><div class="f"><label for="kText">Was hast du gegessen oder getrunken?</label><input id="kText" maxlength="300" placeholder="z. B. Ich habe einen Döner mit Zwiebeln gegessen" enterkeyhint="send"></div>
 <button class="btn s" id="kMic" style="margin:-4px 0 12px">🎤 Sprechen</button>
 <button class="btn" id="kEstBtn">Schätzen</button><div class="hint">Die Werte sind eine KI-Schätzung und nur ungefähr. Ist die KI nicht erreichbar, suche ich automatisch in Open Food Facts.</div>
@@ -232,6 +236,7 @@ nav a.has::after{content:"";position:absolute;top:1px;left:calc(50% + 8px);width
 <div class="r2"><div class="f"><label for="mP">kcal pro 100 g/ml</label><input id="mP" type="number" inputmode="decimal" min="0" step="0.1"></div><div class="f"><label for="mA">Menge</label><input id="mA" type="number" inputmode="decimal" min="0"></div></div>
 <div class="f"><label for="mU">Einheit</label><select id="mU"><option>g</option><option>ml</option></select></div><div class="hint" id="kHint"></div><div class="res" id="mC">= 0 kcal</div><button class="btn" id="mSave">Speichern</button></div>
 <div id="k-dir" class="hid"><div class="f"><label for="dN">Name</label><input id="dN" maxlength="60"></div><div class="f"><label for="dK">Kalorien (kcal)</label><input id="dK" type="number" inputmode="numeric" min="0"></div><button class="btn" id="dSave">Speichern</button></div>
+<div id="k-fav" class="hid"><div id="favList"></div></div>
 </div>
 <h2>Einträge</h2><div class="card" id="kList"></div>
 </section>
@@ -262,6 +267,27 @@ nav a.has::after{content:"";position:absolute;top:1px;left:calc(50% + 8px);width
 <div class="card" id="qText"></div>
 </section>
 
+<!-- PASSWOERTER -->
+<section class="view" id="v-passwoerter">
+<header><div><a class="back" href="#start">‹ Start</a><h1>Passwörter</h1></div><button class="btn s small" id="pwLock" style="display:none">Sperren</button></header>
+<div class="card hid" id="pwSetup"><div class="lbl">Tresor einrichten</div>
+<div class="hint" style="margin:6px 0 12px">Lege ein Master-Passwort fest. Damit werden deine Passwörter auf dem Gerät verschlüsselt, bevor sie gespeichert werden. Niemand sonst kann sie lesen, auch Janne nicht. Vergisst du das Master-Passwort, sind die Daten unwiederbringlich weg.</div>
+<div class="f"><input id="pwPw1" type="password" placeholder="Master-Passwort (mind. 10 Zeichen)" autocomplete="off"></div>
+<div class="f"><input id="pwPw2" type="password" placeholder="Wiederholen" autocomplete="off"></div>
+<button class="btn" id="pwCreate">Tresor anlegen</button></div>
+<div class="card hid" id="pwLocked"><div class="lbl">Gesperrt</div>
+<div class="f" style="margin-top:8px"><input id="pwPw0" type="password" placeholder="Master-Passwort" autocomplete="off"></div>
+<button class="btn" id="pwUnlock">Entsperren</button>
+<div class="hint">Der Tresor sperrt sich nach 2 Minuten ohne Eingabe, beim Verlassen dieser Seite und kurz nach dem Wechsel in eine andere App.</div></div>
+<div class="hid" id="pwOpen"><div class="card" id="pwList"></div></div>
+<div class="sheet" id="sh-pw"><div class="sh-h"><b id="pwSheetT">Neuer Eintrag</b><button class="x" data-close aria-label="Schließen">✕</button></div>
+<div class="f"><label for="pwTitle">Titel</label><input id="pwTitle" maxlength="60" autocomplete="off"></div>
+<div class="f"><label for="pwUser">Benutzername oder E-Mail</label><input id="pwUser" maxlength="120" autocomplete="off" autocapitalize="none"></div>
+<div class="f"><label for="pwPass">Passwort</label><div class="add"><input id="pwPass" maxlength="200" autocomplete="off" autocapitalize="none" style="-webkit-text-security:disc"><button id="pwEye" type="button">Zeigen</button><button id="pwGen" type="button">Neu</button></div></div>
+<div class="f"><label for="pwNote">Notiz</label><input id="pwNote" maxlength="200" autocomplete="off"></div>
+<button class="btn" id="pwSave">Speichern</button><button class="btn s" id="pwDel" style="margin-top:8px;display:none">Löschen</button></div>
+</section>
+
 <!-- EINSTELLUNGEN -->
 <section class="view" id="v-einstellungen">
 <header><h1>Einstellungen</h1></header>
@@ -274,6 +300,7 @@ nav a.has::after{content:"";position:absolute;top:1px;left:calc(50% + 8px);width
 <div class="crow"><span>Akzent 2 (Verlauf)</span><input type="color" id="cB"></div>
 <button class="btn s" id="cReset" style="margin-top:12px">Zurücksetzen</button></div>
 <div class="card"><div class="lbl">Menü unten</div><div id="navList"></div><div class="hint" id="navHint"></div></div>
+<div class="card"><div class="lbl">Benachrichtigungen</div><div id="pushList"></div><div class="hint" id="pushHint"></div><button class="btn s" id="pushTest" style="margin-top:10px">Test-Benachrichtigung</button></div>
 <div class="card"><div class="lbl">Hinweispunkte</div><div class="hint" id="dotInfo" style="margin-top:0"></div><button class="btn s" id="dotTest" style="margin-top:10px">Punkte testen</button></div>
 <div class="card"><div class="f"><label for="stWho">Ich bin</label><select id="stWho"><option value="">– wählen –</option><option>Mert</option><option>Janne</option></select></div>
 <div class="f"><label for="stGoal">Kalorienziel pro Tag (kcal)</label><input id="stGoal" type="number" inputmode="numeric" min="1" max="10000"></div>
@@ -288,8 +315,9 @@ nav a.has::after{content:"";position:absolute;top:1px;left:calc(50% + 8px);width
 <details style="margin-top:10px"><summary>Als Text kopieren oder einfügen</summary>
 <div class="f" style="margin-top:10px"><textarea id="bkText" placeholder="Backup-Text hier erzeugen oder einfügen" style="min-height:90px"></textarea></div>
 <div class="r2"><button class="btn s" id="bkMake">Text erzeugen</button><button class="btn s" id="bkRestore">Aus Text laden</button></div></details></div>
+<div class="card"><div class="lbl">App aktualisieren</div><div class="hint" id="swInfo" style="margin-top:0">Offline-Modus wird eingerichtet …</div><button class="btn s" id="updBtn" style="margin-top:10px">Neu laden und Cache leeren</button></div>
 <div class="card"><div class="lbl">Version</div>
-<div class="hint" style="margin-top:0" id="verApp">App: v2026-11-15-3</div>
+<div class="hint" style="margin-top:0" id="verApp">App: v2026-11-15-4</div>
 <div class="hint" id="verWorker">KI-Worker: wird geprüft …</div></div>
 </section>
 
@@ -335,8 +363,8 @@ function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");cle
 const run=async(f,err)=>{try{await f()}catch(e){toast(err||"Aktion fehlgeschlagen")}};
 
 /* ---------- Routing ---------- */
-const VIEWS=["start","finanzen","einkauf","kalender","kalorien","spiele","quran","einstellungen"];
-const OPT=["finanzen","einkauf","kalender","kalorien","spiele","quran"],DEFNAV=["kalender","kalorien"];
+const VIEWS=["start","finanzen","einkauf","kalender","kalorien","spiele","quran","passwoerter","einstellungen"];
+const OPT=["finanzen","einkauf","kalender","kalorien","spiele","quran","passwoerter"],DEFNAV=["kalender","kalorien"];
 const navOpt=()=>{const n=(typeof prefs!=="undefined"&&prefs.nav||[]).filter(k=>OPT.includes(k));return n.length>=1&&n.length<=4?n:DEFNAV};
 const navKeys=()=>["start",...OPT.filter(k=>navOpt().includes(k)),"einstellungen"];
 const NAVKEY=h=>navKeys().includes(h)?h:"start";
@@ -346,19 +374,20 @@ let t="Kein Sync · nur dieses Gerät",ok=false;
 if(cur==="kalorien"){if(me){t="Privat gespeichert · nur du siehst das";ok=true}else t="Nur auf diesem Gerät gespeichert"}
 else if(!navigator.onLine)t="Offline · Sync folgt später";else if(db&&!live)t=errCode==="permission-denied"?"Kein Zugriff – E-Mail in den Regeln prüfen":"Verbindung unterbrochen";else if(live){t="Live-Sync aktiv";ok=true}
 el.innerHTML=(ok?"<b>●</b> ":"○ ")+esc(t)}catch(e){}}
-const SHEETS={finanzen:"sh-fin",kalender:"sh-cal",kalorien:"sh-kal"};let cur="finanzen",openSh=null;
+const SHEETS={finanzen:"sh-fin",kalender:"sh-cal",kalorien:"sh-kal",passwoerter:"sh-pw"};let cur="finanzen",openSh=null;
 function openSheet(id){closeSheet();openSh=id;$(id).classList.add("open");$("bd").classList.add("on")}
 function closeSheet(){if(openSh)$(openSh).classList.remove("open");openSh=null;$("bd").classList.remove("on")}
 function ask(msg,ok){return new Promise(res=>{$("askT").textContent=msg;$("askOk").textContent=ok||"Löschen";$("ask").classList.add("open");
 const done=v=>{$("ask").classList.remove("open");$("askOk").onclick=$("askNo").onclick=null;res(v)};$("askOk").onclick=()=>done(true);$("askNo").onclick=()=>done(false)})}
 $("ask").onclick=e=>{if(e.target.id==="ask")$("askNo").click()};$("bd").onclick=closeSheet;
-$("fab").onclick=()=>{if(SHEETS[cur])openSheet(SHEETS[cur])};
+$("fab").onclick=()=>{if(cur==="passwoerter"){openPwSheet(null);return}if(SHEETS[cur])openSheet(SHEETS[cur])};
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=closeSheet);
 addEventListener("keydown",e=>{if(e.key==="Escape"){if($("ask").classList.contains("open"))$("askNo").click();else closeSheet()}});
 function route(){let h=location.hash.slice(1);if(!VIEWS.includes(h))h="start";cur=h;closeSheet();$("fab").classList.toggle("hid",!SHEETS[h]);renderLive();
 VIEWS.forEach(v=>{$("v-"+v).classList.toggle("on",v===h)});
 document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.v===NAVKEY(h)));scrollTo(0,0);
 try{renderBadges()}catch(e){}
+try{if(h!=="passwoerter")vaultLock();else renderVaultUI()}catch(e){}
 if(h==="quran"){try{loadSura()}catch(e){}}}
 addEventListener("hashchange",route);
 
@@ -391,9 +420,10 @@ $("lIn").onclick=()=>go(false);$("lNew").onclick=()=>go(true)});$("login").class
 const P=p=>p.split("/");
 const bad=er=>e=>{errCode=(e&&e.code)||"";live=false;renderLive();if(er)er(e)};
 const good=()=>{if(!live){live=true;errCode="";renderLive()}};
+const quick=pr=>{pr.catch(()=>{});return Promise.race([pr,new Promise(r=>setTimeout(r,1200))])};
 const mkDoc=path=>({
 onSnapshot:(cb,er)=>fsSnap(fsDoc(fs,...P(path)),s=>{good();cb({exists:s.exists(),data:()=>s.data()})},bad(er)),
-set:o=>setDoc(fsDoc(fs,...P(path)),o),update:o=>updateDoc(fsDoc(fs,...P(path)),o),delete:()=>deleteDoc(fsDoc(fs,...P(path)))});
+set:o=>quick(setDoc(fsDoc(fs,...P(path)),o)),update:o=>quick(updateDoc(fsDoc(fs,...P(path)),o)),delete:()=>quick(deleteDoc(fsDoc(fs,...P(path))))});
 const mkCol=path=>({
 onSnapshot:(cb,er)=>fsSnap(fsCol(fs,...P(path)),s=>{good();cb({docs:s.docs.map(d=>({id:d.id,exists:true,data:()=>d.data()}))})},bad(er)),
 doc:id=>mkDoc(path+"/"+id)});
@@ -438,7 +468,7 @@ $("fPrev").onclick=()=>{fm.setMonth(fm.getMonth()-1);renderFin()};$("fNext").onc
 $("fType").onclick=e=>{const t=e.target.dataset.t;if(!t)return;fType=t;[...$("fType").children].forEach(b=>b.classList.toggle("on",b===e.target));renderFin()};
 $("fForm").onsubmit=e=>{e.preventDefault();const a=Math.round(parseFloat($("fAmt").value)*100)/100;if(!(a>0))return toast("Bitte einen Betrag eingeben");
 const o={type:fType,amount:a,tag:$("fCat").value,date:$("fDate").value,who:$("fWhoS").value,note:$("fNote").value.trim(),createdAt:Date.now(),by:prefs.who||""};
-run(async()=>{await fin.add(o);$("fAmt").value="";$("fNote").value="";fm=new Date(o.date+"T12:00:00");fm.setDate(1);renderFin();closeSheet();toast("Gespeichert")},"Speichern fehlgeschlagen")};
+run(async()=>{await fin.add(o);notify("finanzen",nm()+": "+(o.type==="in"?"Einnahme ":"Ausgabe ")+eur(o.amount)+" · "+o.tag);$("fAmt").value="";$("fNote").value="";fm=new Date(o.date+"T12:00:00");fm.setDate(1);renderFin();closeSheet();toast("Gespeichert")},"Speichern fehlgeschlagen")};
 $("fList").onclick=e=>{const id=e.target.dataset.del;if(id)ask("Diesen Eintrag löschen?").then(ok=>ok&&run(()=>fin.del(id)))};
 document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{const k=b.dataset.add,inp=$(k==="out"?"tOut":"tIn"),v=inp.value.trim();if(!v)return;
 if(tags[k].some(x=>x.toLowerCase()===v.toLowerCase()))return toast("Gibt es schon");tags[k].push(v);inp.value="";run(saveTags)});
@@ -449,7 +479,7 @@ const shop=store("items",renderShop);
 function renderShop(){const L=shop.get().slice().sort((a,b)=>(a.done-b.done)||(a.createdAt-b.createdAt));
 $("sList").innerHTML=L.length?L.map(i=>`<div class="ln ${i.done?"done":""}" data-id="${esc(i.id)}" style="cursor:pointer"><div class="chk">${i.done?"✓":""}</div><div class="t nm">${esc(i.name)}</div><button class="x" data-del="${esc(i.id)}" aria-label="Löschen">✕</button></div>`).join(""):EMPTY("Die Liste ist leer");
 const open=L.filter(i=>!i.done).length;$("sCount").textContent=open+" offen";$("sClear").disabled=open===L.length}
-$("sForm").onsubmit=e=>{e.preventDefault();const n=$("sIn").value.trim();if(!n)return;$("sIn").value="";run(()=>shop.add({name:n,done:false,createdAt:Date.now(),by:prefs.who||""}))};
+$("sForm").onsubmit=e=>{e.preventDefault();const n=$("sIn").value.trim();if(!n)return;$("sIn").value="";run(async()=>{await shop.add({name:n,done:false,createdAt:Date.now(),by:prefs.who||""});notify("einkauf",nm()+": "+n)})};
 $("sList").onclick=e=>{const d=e.target.closest("[data-del]");if(d)return run(()=>shop.del(d.dataset.del));
 const r=e.target.closest("[data-id]");if(r){const it=shop.get().find(x=>x.id===r.dataset.id);if(it)run(()=>shop.set(it.id,{done:!it.done,at:Date.now(),lastBy:prefs.who||""}))}};
 $("sClear").onclick=()=>run(async()=>{for(const i of shop.get().filter(x=>x.done))await shop.del(i.id);toast("Erledigte entfernt")});
@@ -470,28 +500,28 @@ const L=evOn(cs);$("cDay").innerHTML=L.length?L.map(e=>`<div class="ev"><div cla
 $("cPrev").onclick=()=>{cm.setMonth(cm.getMonth()-1);renderCal()};$("cNext").onclick=()=>{cm.setMonth(cm.getMonth()+1);renderCal()};
 $("cGrid").onclick=e=>{const b=e.target.closest("[data-d]");if(!b)return;cs=b.dataset.d;$("cDate").value=cs;renderCal()};
 $("cForm").onsubmit=e=>{e.preventDefault();const o={title:$("cTitle").value.trim(),note:$("cNote").value.trim(),date:$("cDate").value,time:$("cTime").value||"",who:$("cWho").value,color:document.querySelector('input[name="cc"]:checked').value,createdAt:Date.now(),by:prefs.who||""};
-if(!o.title||!o.date)return;run(async()=>{await cal.add(o);$("cTitle").value="";$("cNote").value="";$("cTime").value="";cs=o.date;const[y,m]=o.date.split("-").map(Number);cm=new Date(y,m-1,1);renderCal();closeSheet();toast("Termin gespeichert")},"Speichern fehlgeschlagen")};
+if(!o.title||!o.date)return;run(async()=>{await cal.add(o);notify("kalender",nm()+": Termin „"+o.title+"“ am "+fd(o.date));$("cTitle").value="";$("cNote").value="";$("cTime").value="";cs=o.date;const[y,m]=o.date.split("-").map(Number);cm=new Date(y,m-1,1);renderCal();closeSheet();toast("Termin gespeichert")},"Speichern fehlgeschlagen")};
 $("cDay").onclick=e=>{const id=e.target.dataset.del;if(id)ask("Diesen Termin löschen?").then(ok=>ok&&run(()=>cal.del(id)))};
 
 /* ---------- Kalorien (privat) ---------- */
 let kd=new Date(),days=me?{}:lsGet("sa.cal",{}),est=null;
 const kEntries=()=>days[ymd(kd)]||[];
 async function saveDay(key){if(me)await me.doc("day-"+key).set({entries:days[key]||[]});else lsSet("sa.cal",days);renderKal()}
-function renderKal(){renderHome();const key=ymd(kd),L=kEntries(),sum=L.reduce((a,e)=>a+e.kcal,0),g=prefs.goal||0;
+function renderKal(){renderHome();try{renderFavs()}catch(e){}const key=ymd(kd),L=kEntries(),sum=L.reduce((a,e)=>a+e.kcal,0),g=prefs.goal||0;
 $("kDay").textContent=key===ymd(new Date())?"Heute":kd.toLocaleDateString("de-DE",{weekday:"short",day:"2-digit",month:"2-digit"});
 $("kEat").textContent=nf(sum);$("kOf").textContent=g?"von "+nf(g)+" kcal":"kcal";$("kGoal").textContent=g?nf(g)+" kcal":"nicht gesetzt";
 const bar=$("kBar"),left=g-sum;
 if(g){$("kLeftL").textContent=left>=0?"Noch frei":"Über dem Ziel";$("kLeft").textContent=nf(Math.abs(left))+" kcal";bar.classList.toggle("over",left<0);bar.firstElementChild.style.width=Math.min(100,sum/g*100)+"%"}
 else{$("kLeftL").textContent="Noch frei";$("kLeft").textContent="Ziel unter „Mehr“ setzen";bar.classList.remove("over");bar.firstElementChild.style.width="0"}
-$("kList").innerHTML=L.length?L.map(e=>`<div class="ln"><div class="t">${esc(e.name)}${e.detail?`<small>${esc(e.detail)}</small>`:""}</div><b>${nf(e.kcal)} kcal</b><button class="x" data-del="${esc(e.id)}" aria-label="Löschen">✕</button></div>`).join(""):EMPTY("Noch nichts eingetragen")}
+$("kList").innerHTML=L.length?L.map(e=>`<div class="ln"><div class="t">${esc(e.name)}${e.detail?`<small>${esc(e.detail)}</small>`:""}</div><b>${nf(e.kcal)} kcal</b><button class="x" data-star="${esc(e.id)}" aria-label="Favorit">${isFav(e)?"★":"☆"}</button><button class="x" data-del="${esc(e.id)}" aria-label="Löschen">✕</button></div>`).join(""):EMPTY("Noch nichts eingetragen")}
 async function addK(name,kcal,detail){const key=ymd(kd);days[key]=(days[key]||[]).concat({id:uid(),name,kcal:Math.round(kcal),detail:detail||""});run(async()=>{await saveDay(key);closeSheet();toast("Gespeichert")},"Speichern fehlgeschlagen")}
 $("kPrev").onclick=()=>{kd.setDate(kd.getDate()-1);renderKal()};$("kNext").onclick=()=>{kd.setDate(kd.getDate()+1);renderKal()};
-$("kMode").onclick=e=>{const m=e.target.dataset.m;if(!m)return;[...$("kMode").children].forEach(b=>b.classList.toggle("on",b===e.target));["est","man","dir"].forEach(k=>$("k-"+k).classList.toggle("hid",k!==m))};
-$("kList").onclick=e=>{const id=e.target.dataset.del;if(!id)return;const key=ymd(kd);days[key]=kEntries().filter(x=>x.id!==id);run(()=>saveDay(key))};
+$("kMode").onclick=e=>{const m=e.target.dataset.m;if(!m)return;[...$("kMode").children].forEach(b=>b.classList.toggle("on",b===e.target));["est","man","dir","fav"].forEach(k=>$("k-"+k).classList.toggle("hid",k!==m))};
+$("kList").onclick=e=>{const sid=e.target.dataset.star;if(sid){toggleFav(sid);return}const id=e.target.dataset.del;if(!id)return;const key=ymd(kd);days[key]=kEntries().filter(x=>x.id!==id);run(()=>saveDay(key))};
 const calc=()=>{const v=(parseFloat($("mP").value)||0)*(parseFloat($("mA").value)||0)/100;$("mC").textContent="= "+nf(v)+" kcal"};
 let found=[],aiData=null;
 const WORKER="https://mj-kalorien.mertm-malkoc.workers.dev";
-const setMode=m=>{[...$("kMode").children].forEach(b=>b.classList.toggle("on",b.dataset.m===m));["est","man","dir"].forEach(k=>$("k-"+k).classList.toggle("hid",k!==m))};
+const setMode=m=>{[...$("kMode").children].forEach(b=>b.classList.toggle("on",b.dataset.m===m));["est","man","dir","fav"].forEach(k=>$("k-"+k).classList.toggle("hid",k!==m))};
 const fillDirect=(name,kcal)=>{$("dN").value=String(name).slice(0,60);$("dK").value=Math.round(kcal);setMode("dir")};
 const fillManual=(name,per,unit,hint)=>{$("mN").value=String(name).slice(0,60);$("mP").value=Math.round(per*10)/10;$("mU").value=unit==="ml"?"ml":"g";$("mA").value="";calc();$("kHint").textContent=hint||"";setMode("man");$("mA").focus()};
 const showAi=d=>{aiData=d;$("kRes").innerHTML=`<div class="res"><b>${esc(d.name)}</b><div style="color:var(--muted);font-size:13px;margin-top:4px">${esc(d.hint)}</div></div>
@@ -539,12 +569,12 @@ const p=found[+r.dataset.p];fillManual(p.product_name,p.nutriments["energy-kcal_
 $("mSave").onclick=()=>{const p=parseFloat($("mP").value),a=parseFloat($("mA").value),n=$("mN").value.trim();if(!n||!(p>=0)||!(a>0))return toast("Name, kcal und Menge ausfüllen");
 addK(n,p*a/100,`${nf(a)} ${$("mU").value} · ${p.toLocaleString("de-DE")} kcal/100 ${$("mU").value}`);["mN","mP","mA"].forEach(id=>$(id).value="");calc()};
 $("dSave").onclick=()=>{const k=parseFloat($("dK").value),n=$("dN").value.trim();if(!n||!(k>=0))return toast("Name und kcal ausfüllen");addK(n,k,"");$("dN").value="";$("dK").value=""};
-if(me)me.onSnapshot(s=>{days={};s.docs.forEach(d=>{if(!d.exists)return;const v=d.data();if(d.id==="prefs"){prefs={...prefs,...v};lsSet("sa.prefs",prefs);applyTheme();renderSet()}else if(d.id.startsWith("day-"))days[d.id.slice(4)]=v.entries||[]});renderKal()},()=>{live=false;renderSet()});
+if(me)me.onSnapshot(s=>{days={};s.docs.forEach(d=>{if(!d.exists)return;const v=d.data();if(d.id==="prefs"){prefs={...prefs,...v};lsSet("sa.prefs",prefs);applyTheme();renderSet()}else if(d.id.startsWith("day-"))days[d.id.slice(4)]=v.entries||[];else if(d.id==="vault")vaultRec=v;else if(d.id==="favs")favs=v.items||[]});renderKal();renderVaultUI()},()=>{live=false;renderSet()});
 
 /* ---------- Einstellungen ---------- */
 $("thm").innerHTML=THEMES.map(t=>`<button data-th="${t[0]}"><i style="background:${t[2]}"></i>${t[1]}</button>`).join("");
 async function savePrefs(p){prefs={...prefs,...p};lsSet("sa.prefs",prefs);applyTheme();renderSet();renderKal();if(me)await me.doc("prefs").set(prefs)}
-function renderSet(){renderLive();renderNav();renderNavList();syncCustom();renderDotInfo();document.querySelectorAll("#thm button").forEach(b=>b.classList.toggle("on",b.dataset.th===prefs.theme));
+function renderSet(){renderLive();renderNav();renderNavList();syncCustom();renderDotInfo();renderPushList();document.querySelectorAll("#thm button").forEach(b=>b.classList.toggle("on",b.dataset.th===prefs.theme));
 if(document.activeElement!==$("stGoal"))$("stGoal").value=prefs.goal||"";$("stWho").value=prefs.who||"";applyWho();
 $("stInfo").textContent=(live?"Live verbunden. ":"Nur auf diesem Gerät gespeichert. ")+"Finanzen, Einkauf und Kalender werden mit allen geteilt, die sich mit einer freigeschalteten E-Mail anmelden. Kalorien, Design und Menü sind privat."}
 $("thm").onclick=e=>{const b=e.target.closest("[data-th]");if(b)run(()=>savePrefs({theme:b.dataset.th}))};
@@ -574,7 +604,7 @@ if(!mine)return toast("Wähle zuerst unter „Mehr“, wer du bist");
 if(ttt.winner)return;if(ttt.turn!==mine)return toast((ttt.turn==="X"?ttt.x:ttt.o)+" ist dran");if(ttt.board[i]!=="-")return;
 const nb=ttt.board.slice(0,i)+mine+ttt.board.slice(i+1),w=winnerOf(nb),sc={...ttt.score};
 if(w==="X")sc[ttt.x]=(sc[ttt.x]||0)+1;else if(w==="O")sc[ttt.o]=(sc[ttt.o]||0)+1;else if(w==="draw")sc.draw=(sc.draw||0)+1;
-run(()=>tttDoc.set({...ttt,board:nb,turn:mine==="X"?"O":"X",winner:w,score:sc,by:prefs.who,at:Date.now()}),"Zug fehlgeschlagen")};
+run(async()=>{await tttDoc.set({...ttt,board:nb,turn:mine==="X"?"O":"X",winner:w,score:sc,by:prefs.who,at:Date.now()});notify("spiele",w==="draw"?"Unentschieden bei Tic-Tac-Toe":w?nm()+" hat gewonnen":nm()+" hat gezogen – du bist dran")},"Zug fehlgeschlagen")};
 $("tttNew").onclick=()=>{const st=ttt.starter==="X"?"O":"X";run(()=>tttDoc.set({...ttt,board:"---------",turn:st,starter:st,winner:"",by:prefs.who||"",at:Date.now()}),"Neues Spiel fehlgeschlagen")};
 
 /* ---------- Quran: Sure des Tages ---------- */
@@ -592,7 +622,7 @@ $("qWho").innerHTML=PEOPLE.map(p=>`<span class="chip ${rd[p]?"on":""}">${esc(p)}
 const done=!!(prefs.who&&rd[prefs.who]);$("qBtn").textContent=done?"Gelesen – rückgängig machen":"Als gelesen markieren";$("qBtn").classList.toggle("s",done);$("qBtn").disabled=!prefs.who}
 $("qBtn").onclick=()=>{if(!prefs.who)return;const cur=qToday(),rd={...(cur.read||{})};
 if(rd[prefs.who])delete rd[prefs.who];else rd[prefs.who]=Date.now();
-run(()=>quran.put(dayKey(),{read:rd}),"Speichern fehlgeschlagen")};
+run(async()=>{await quran.put(dayKey(),{read:rd});if(prefs.who&&rd[prefs.who])notify("quran",nm()+" hat die Sure des Tages gelesen")},"Speichern fehlgeschlagen")};
 let trId=null;
 const edOf=(d,id)=>d.find(x=>x.edition&&x.edition.identifier===id)||null;
 function showSura(n,d){const ar=(edOf(d,"quran-uthmani")||d[0]).ayahs,de=(edOf(d,"de.bubenheim")||d[d.length-1]).ayahs,t=trId&&edOf(d,trId),tr=t?t.ayahs:null;
@@ -626,7 +656,7 @@ $("hSura").textContent=`Sure ${n} · ${SURAS[n-1]}`;$("hSuraSub").textContent=wh
 $("whoPick").onclick=e=>{const w=e.target.dataset.w;if(w)run(()=>savePrefs({who:w}))};
 
 /* ---------- Untere Leiste (anpassbar) ---------- */
-const NAVI={start:["Start",'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>'],finanzen:["Finanzen",'<svg viewBox="0 0 24 24"><path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l12-3v3M17 13.5h.01"/></svg>'],einkauf:["Einkauf",'<svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6"/></svg>'],kalender:["Kalender",'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>'],kalorien:["Kalorien",'<svg viewBox="0 0 24 24"><path d="M12 3c1 4 6 6 6 11a6 6 0 0 1-12 0c0-2 1-3 2-4 0 2 1 3 2 3 0-4 1-7 2-10z"/></svg>'],spiele:["Spiele",'<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="5"/><path d="M7 12h4M9 10v4M15 13h.01M17 11h.01"/></svg>'],quran:["Quran",'<svg viewBox="0 0 24 24"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/></svg>'],einstellungen:["Mehr",'<svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>']};
+const NAVI={passwoerter:["Passwörter",'<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>'],start:["Start",'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>'],finanzen:["Finanzen",'<svg viewBox="0 0 24 24"><path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l12-3v3M17 13.5h.01"/></svg>'],einkauf:["Einkauf",'<svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6"/></svg>'],kalender:["Kalender",'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>'],kalorien:["Kalorien",'<svg viewBox="0 0 24 24"><path d="M12 3c1 4 6 6 6 11a6 6 0 0 1-12 0c0-2 1-3 2-4 0 2 1 3 2 3 0-4 1-7 2-10z"/></svg>'],spiele:["Spiele",'<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="5"/><path d="M7 12h4M9 10v4M15 13h.01M17 11h.01"/></svg>'],quran:["Quran",'<svg viewBox="0 0 24 24"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/></svg>'],einstellungen:["Mehr",'<svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>']};
 function renderNav(){try{const act=NAVKEY(cur);
 $("nav").innerHTML=navKeys().map(k=>`<a href="#${k}" data-v="${k}" class="${k===act?"on":""}">${NAVI[k][1]}${NAVI[k][0]}</a>`).join("");renderBadges()}catch(e){}}
 function renderNavList(){try{const on=navOpt();
@@ -671,6 +701,116 @@ function renderDotInfo(){try{const o=PEOPLE.find(p=>p!==prefs.who)||"die andere 
 $("dotInfo").textContent=prefs.who?`Du bist ${prefs.who}. Rote Punkte erscheinen, wenn ${o} etwas Neues macht (Zug, Einkauf, Eintrag, Termin, Sure gelesen). Allein kannst du sie nur mit dem Test sehen.`:"Wähle oben bei „Ich bin“ deinen Namen, sonst gibt es keine Punkte."}catch(e){}}
 $("dotTest").onclick=()=>{fakeDots=true;renderBadges();toast("Test: Punkte 8 Sekunden sichtbar");setTimeout(()=>{fakeDots=false;renderBadges()},8000)};
 
+/* ---------- Kalorien: Favoriten ---------- */
+let favs=[];
+const favKey=e=>e.name+"|"+e.kcal;
+const isFav=e=>favs.some(f=>favKey(f)===favKey(e));
+function toggleFav(id){const e=kEntries().find(x=>x.id===id);if(!e)return;
+favs=isFav(e)?favs.filter(f=>favKey(f)!==favKey(e)):[...favs,{id:uid(),name:e.name,kcal:e.kcal}];
+run(()=>me.doc("favs").set({items:favs}),"Speichern fehlgeschlagen");renderKal()}
+function renderFavs(){$("favList").innerHTML=favs.length?favs.map(f=>`<div class="ln" data-fid="${esc(f.id)}" style="cursor:pointer"><div class="t">★ ${esc(f.name)}</div><b>${nf(f.kcal)} kcal</b><button class="x" data-unfav="${esc(f.id)}" aria-label="Entfernen">✕</button></div>`).join(""):EMPTY("Noch keine Favoriten – tippe in der Liste auf ☆")}
+$("favList").onclick=e=>{const u=e.target.dataset.unfav;
+if(u){favs=favs.filter(f=>f.id!==u);run(()=>me.doc("favs").set({items:favs}));renderKal();return}
+const r=e.target.closest("[data-fid]");if(!r)return;const f=favs.find(x=>x.id===r.dataset.fid);if(f)addK(f.name,f.kcal,"Favorit")};
+
+/* ---------- Passwörter (verschlüsselt) ---------- */
+/*vc*/
+const VENC=new TextEncoder(),VDEC=new TextDecoder();
+const vb64=u=>{let s="";for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)};
+const vun64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function vDerive(pw,salt,iter){const base=await crypto.subtle.importKey("raw",VENC.encode(pw),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:iter,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"])}
+async function vSeal(key,obj){const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,VENC.encode(JSON.stringify(obj)));return{iv:vb64(iv),data:vb64(new Uint8Array(ct))}}
+async function vOpen(key,rec){const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:vun64(rec.iv)},key,vun64(rec.data));return JSON.parse(VDEC.decode(pt))}
+/*vc-end*/
+let vaultRec=null,vaultKey=null,vaultItems=[],vaultIdle=null,pwEdit=null,pwShow={},hiddenAt=0;
+const VITER=600000,sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function vaultLock(){vaultKey=null;vaultItems=[];pwShow={};pwEdit=null;clearTimeout(vaultIdle);
+["pwPw0","pwPw1","pwPw2","pwTitle","pwUser","pwPass","pwNote"].forEach(id=>{const el=$(id);if(el)el.value=""});
+if(openSh==="sh-pw")closeSheet();renderVaultUI()}
+function vaultTouch(){if(!vaultKey)return;clearTimeout(vaultIdle);vaultIdle=setTimeout(vaultLock,120000)}
+document.addEventListener("click",vaultTouch,true);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)hiddenAt=Date.now();else if(vaultKey&&hiddenAt&&Date.now()-hiddenAt>30000)vaultLock()});
+function renderVaultUI(){try{const st=!vaultRec?"setup":!vaultKey?"locked":"open";
+$("pwSetup").classList.toggle("hid",st!=="setup");$("pwLocked").classList.toggle("hid",st!=="locked");$("pwOpen").classList.toggle("hid",st!=="open");
+$("pwLock").style.display=st==="open"?"":"none";
+if(cur==="passwoerter")$("fab").classList.toggle("hid",st!=="open");
+if(st==="open")$("pwList").innerHTML=vaultItems.length?vaultItems.map(it=>`<div class="ln"><div class="t" data-pedit="${esc(it.id)}" style="cursor:pointer"><b>${esc(it.title)}</b><small>${esc(it.user||"")}</small>${pwShow[it.id]?`<small style="font-family:ui-monospace,Menlo,monospace;color:var(--text)">${esc(it.pass)}</small>`:""}</div><button class="btn s small" data-pshow="${esc(it.id)}">${pwShow[it.id]?"Verbergen":"Zeigen"}</button><button class="btn s small" data-pcopy="${esc(it.id)}">Kopieren</button></div>`).join(""):EMPTY("Noch keine Passwörter – tippe auf +")}catch(e){}}
+async function vaultSave(){const x=await vSeal(vaultKey,{items:vaultItems});vaultRec={...vaultRec,...x};await me.doc("vault").set(vaultRec)}
+function openPwSheet(it){pwEdit=it?it.id:null;$("pwSheetT").textContent=it?"Eintrag bearbeiten":"Neuer Eintrag";
+$("pwTitle").value=it?it.title:"";$("pwUser").value=it?(it.user||""):"";$("pwPass").value=it?it.pass:"";$("pwNote").value=it?(it.note||""):"";
+$("pwPass").style.webkitTextSecurity="disc";$("pwEye").textContent="Zeigen";$("pwDel").style.display=it?"":"none";openSheet("sh-pw")}
+$("pwCreate").onclick=async()=>{const a=$("pwPw1").value,b=$("pwPw2").value;
+if(a.length<10)return toast("Mindestens 10 Zeichen");if(a!==b)return toast("Die Passwörter stimmen nicht überein");
+if(!navigator.onLine)return toast("Zum Anlegen bitte online sein");
+$("pwCreate").disabled=true;toast("Wird verschlüsselt …");
+try{const salt=crypto.getRandomValues(new Uint8Array(16));vaultKey=await vDerive(a,salt,VITER);vaultItems=[];vaultRec={v:1,salt:vb64(salt),iter:VITER};await vaultSave();
+["pwPw1","pwPw2"].forEach(id=>$(id).value="");vaultTouch();renderVaultUI();toast("Tresor angelegt")}
+catch(e){vaultKey=null;vaultRec=null;renderVaultUI();toast("Anlegen fehlgeschlagen")}finally{$("pwCreate").disabled=false}};
+$("pwUnlock").onclick=async()=>{const p=$("pwPw0").value;if(!p||!vaultRec)return;$("pwUnlock").disabled=true;
+try{const key=await vDerive(p,vun64(vaultRec.salt),vaultRec.iter||VITER);const d=await vOpen(key,vaultRec);vaultKey=key;vaultItems=d.items||[];$("pwPw0").value="";vaultTouch();renderVaultUI()}
+catch(e){await sleep(700);toast("Falsches Passwort")}finally{$("pwUnlock").disabled=false}};
+$("pwPw0").addEventListener("keydown",e=>{if(e.key==="Enter")$("pwUnlock").click()});
+$("pwLock").onclick=vaultLock;
+$("pwList").onclick=e=>{const t=e.target;
+if(t.dataset.pshow){pwShow[t.dataset.pshow]=!pwShow[t.dataset.pshow];renderVaultUI();return}
+if(t.dataset.pcopy){const it=vaultItems.find(x=>x.id===t.dataset.pcopy);if(it)navigator.clipboard.writeText(it.pass).then(()=>toast("Passwort kopiert")).catch(()=>toast("Kopieren nicht möglich"));return}
+const ed=t.closest("[data-pedit]");if(ed){const it=vaultItems.find(x=>x.id===ed.dataset.pedit);if(it)openPwSheet(it)}};
+$("pwSave").onclick=()=>{const t=$("pwTitle").value.trim();if(!t||!$("pwPass").value)return toast("Titel und Passwort ausfüllen");
+const it={id:pwEdit||uid(),title:t.slice(0,60),user:$("pwUser").value.trim().slice(0,120),pass:$("pwPass").value,note:$("pwNote").value.trim().slice(0,200)};
+vaultItems=pwEdit?vaultItems.map(x=>x.id===pwEdit?it:x):[...vaultItems,it];
+run(async()=>{await vaultSave();closeSheet();renderVaultUI();toast("Gespeichert")},"Speichern fehlgeschlagen")};
+$("pwDel").onclick=()=>{ask("Diesen Eintrag löschen?").then(ok=>{if(!ok)return;vaultItems=vaultItems.filter(x=>x.id!==pwEdit);
+run(async()=>{await vaultSave();closeSheet();renderVaultUI();toast("Gelöscht")})})};
+$("pwEye").onclick=()=>{const on=$("pwPass").style.webkitTextSecurity==="disc";$("pwPass").style.webkitTextSecurity=on?"none":"disc";$("pwEye").textContent=on?"Verbergen":"Zeigen"};
+$("pwGen").onclick=()=>{const cs="abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789!?#$%&*+-=",a=crypto.getRandomValues(new Uint32Array(18));$("pwPass").value=[...a].map(n=>cs[n%cs.length]).join("")};
+
+/* ---------- Benachrichtigungen (Push) ---------- */
+const VAPID_KEY="HIER_VAPID_KEY",PUSH_WORKER="https://mj-push.mertm-malkoc.workers.dev";
+const PUSHAREAS=[["finanzen","Finanzen"],["einkauf","Einkauf"],["kalender","Kalender"],["spiele","Spiele"],["quran","Quran"]];
+const PTITLE={finanzen:"Finanzen",einkauf:"Einkauf",kalender:"Kalender",spiele:"Spiele",quran:"Quran"};
+const nm=()=>prefs.who||"Jemand";
+let pushToken=null;
+const push=store("push",()=>{});
+const pushCfg=()=>{const d={finanzen:true,einkauf:true,kalender:true,spiele:true,quran:true},p=prefs.push||{};return{on:!!p.on,areas:{...d,...(p.areas||{})}}};
+function renderPushList(){try{const c=pushCfg();
+const row=(k,label,on,dim)=>`<div class="ln ${on?"done":""}" data-p="${k}" style="cursor:pointer;${dim?"opacity:.5":""}"><div class="chk">${on?"✓":""}</div><div class="t">${label}</div></div>`;
+$("pushList").innerHTML=row("on","Benachrichtigungen",c.on,false)+PUSHAREAS.map(([k,l])=>row(k,l,c.areas[k],!c.on)).join("");
+$("pushHint").textContent=c.on?"Du bekommst einen Hinweis, wenn die andere Person in den gewählten Bereichen etwas macht.":"Funktioniert nur mit der App vom Home-Bildschirm (iOS 16.4 oder neuer). Beim Einschalten fragt iOS nach der Erlaubnis."}catch(e){}}
+async function pushTokenNow(){const M=await import("https://www.gstatic.com/firebasejs/13.3.0/firebase-messaging.js");
+if(!(await M.isSupported()))throw new Error("Hier nicht unterstützt – bitte die App vom Home-Bildschirm öffnen");
+return M.getToken(M.getMessaging(fb),{vapidKey:VAPID_KEY,serviceWorkerRegistration:await navigator.serviceWorker.ready})}
+async function pushEnable(){
+if(/^HIER/.test(VAPID_KEY))throw new Error("Push ist noch nicht eingerichtet (VAPID-Schlüssel fehlt)");
+if(!("Notification" in window)||!("serviceWorker" in navigator))throw new Error("Hier nicht unterstützt – App zum Home-Bildschirm hinzufügen (iOS 16.4+)");
+const perm=await Notification.requestPermission();if(perm!=="granted")throw new Error("Nicht erlaubt – bitte in den iOS-Einstellungen aktivieren");
+pushToken=await pushTokenNow();if(!pushToken)throw new Error("Kein Token erhalten")}
+async function pushPublish(){const c=pushCfg();
+if(c.on&&!pushToken){try{pushToken=await pushTokenNow()}catch(e){}}
+await push.put(user.uid,{who:prefs.who||"",token:pushToken||"",on:!!(c.on&&pushToken),areas:c.areas,updatedAt:Date.now()})}
+$("pushList").onclick=async e=>{const r=e.target.closest("[data-p]");if(!r)return;const k=r.dataset.p,c=pushCfg();
+try{if(k==="on"){if(c.on){await savePrefs({push:{...c,on:false}});await pushPublish();toast("Benachrichtigungen aus")}
+else{await pushEnable();await savePrefs({push:{...c,on:true}});await pushPublish();toast("Benachrichtigungen an")}}
+else{if(!c.on)return toast("Erst oben einschalten");await savePrefs({push:{...c,areas:{...c.areas,[k]:!c.areas[k]}}});await pushPublish()}}
+catch(er){toast(er&&er.message?er.message:"Fehlgeschlagen")}};
+async function sendPush(tokens,title,body,url){const idt=await user.getIdToken();
+const r=await fetch(PUSH_WORKER,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idt},body:JSON.stringify({tokens,title,body,url})});
+const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||("HTTP "+r.status));return j}
+function notify(area,body){try{if(/^HIER/.test(VAPID_KEY))return;
+const rec=push.get().filter(p=>p.id!==user.uid&&p.on&&p.token&&(p.areas||{})[area]!==false);if(!rec.length)return;
+sendPush(rec.map(p=>p.token),PTITLE[area]||"Alltag",body,"./#"+area).catch(()=>{})}catch(e){}}
+$("pushTest").onclick=async()=>{try{if(!pushCfg().on)return toast("Erst Benachrichtigungen einschalten");
+if(!pushToken)pushToken=await pushTokenNow();
+const j=await sendPush([pushToken],"Test","Benachrichtigungen funktionieren","./#einstellungen");const r=j.results&&j.results[0];
+toast(r&&r.ok?"Test gesendet":"Fehler: "+((r&&(r.error||r.detail))||"unbekannt"))}catch(e){toast((e&&e.message)||"Test fehlgeschlagen")}};
+
+/* ---------- Offline-Modus und Update ---------- */
+if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});
+navigator.serviceWorker.ready.then(()=>{$("swInfo").textContent="Offline-Modus ist aktiv. Siehst du ein Update nicht, tippe hier."}).catch(()=>{})}
+else $("swInfo").textContent="Offline-Modus ist hier nicht verfügbar."
+$("updBtn").onclick=async()=>{try{if("serviceWorker" in navigator){const rg=await navigator.serviceWorker.getRegistrations();for(const x of rg)await x.update()}
+if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(e){}
+location.replace(location.pathname+"?u="+Date.now()+location.hash)};
+
 /* ---------- Backup ---------- */
 const bkText=()=>JSON.stringify({app:"alltag",version:1,exported:new Date().toISOString(),entries:fin.get(),items:shop.get(),events:cal.get(),tags,days,prefs},null,1);
 $("bkDown").onclick=()=>run(async()=>{const name="alltag-backup-"+ymd(new Date())+".json";
@@ -691,7 +831,8 @@ $("bkMake").onclick=()=>{$("bkText").value=bkText();toast("Text erzeugt")};
 $("bkRestore").onclick=()=>bkImport($("bkText").value);
 
 fetch(WORKER+"?version=1").then(r=>r.json()).then(j=>{$("verWorker").textContent="KI-Worker: "+j.version+" · Modell "+j.modell}).catch(()=>{$("verWorker").textContent="KI-Worker: nicht erreichbar"});
-renderFin();renderShop();renderCal();renderKal();renderSet();renderQuran();renderTTT();renderHome();route();
+renderFin();renderShop();renderCal();renderKal();renderSet();renderQuran();renderTTT();renderHome();renderFavs();renderVaultUI();renderPushList();route();
+setTimeout(async()=>{try{const c=pushCfg();if(c.on&&"Notification" in window&&Notification.permission==="granted"&&!/^HIER/.test(VAPID_KEY)){pushToken=await pushTokenNow();await pushPublish()}}catch(e){}},4000);
 })();
 </script>
 </body>
